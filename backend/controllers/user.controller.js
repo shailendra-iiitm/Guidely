@@ -31,6 +31,33 @@ const uploadPhoto = async (req, res) => {
   }
 };
 
+// Get logged-in user details
+const getUser = async (req, res, next) => {
+  const userId = req.user._id;
+  const user = await userService.getUserById(userId);
+  if (!user) {
+    return next(new ApiError(httpStatus.notFound, "User not found"));
+  }
+  res.status(httpStatus.ok).json({ success: true, user });
+};
+
+// Update profile
+const updateUserProfile = async (req, res, next) => {
+  const userId = req.user._id;
+  const profileData = req.body;
+  const updatedUser = await userService.updateUserProfile(userId, profileData);
+  if (!updatedUser) {
+    return next(new ApiError(httpStatus.notFound, "User not found"));
+  }
+  res.status(httpStatus.ok).json({
+    success: true,
+    message: "Profile updated successfully",
+    user: updatedUser,
+  });
+};
+
 module.exports = {
-    uploadPhoto
+    uploadPhoto,
+    getUser,
+    updateUserProfile
 };
