@@ -38,3 +38,9 @@ const userSchema = new Schema(
         },
         { timestamps: true}
 );
+
+// Instance method for password check
+
+userSchema.methods.isPasswordMatch = async function (password) {
+    return await bcrypt.compare(password, this.password);
+};
