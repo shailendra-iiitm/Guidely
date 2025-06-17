@@ -21,6 +21,19 @@ const signUp = async (req, res) => {
   });
 };
 
+const signIn = async (req, res) => {
+  const { email, password } = req.body;
 
+  const user = await userService.loginUserWithEmailAndPassword(email, password);
+
+  const token = await tokenService.generateAuthTokens(user);
+  user.password = undefined;
+
+  res.status(httpStatus.ok).json({
+    message: "User signed in successfully",
+    token,
+    user,
+  });
+};
 
 module.exports = { signUp, signIn };
