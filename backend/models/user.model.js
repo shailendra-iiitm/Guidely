@@ -44,3 +44,16 @@ const userSchema = new Schema(
 userSchema.methods.isPasswordMatch = async function (password) {
     return await bcrypt.compare(password, this.password);
 };
+
+//
+user.schema.pre('save', async function (next) {
+    if(this.isModified('password')) {
+        this.password = await bcrypt.hash(this.password, 8);}
+        next();
+    });
+
+userSchema.index({email: 1});
+
+// Export the User model
+const UserModel = model('User', userSchema);
+module.exports = UserModel;
