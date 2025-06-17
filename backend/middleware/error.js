@@ -1,3 +1,4 @@
+const { not } = require("joi");
 const config = require("../config");
 const ApiError = require("../helper/apiError");
 const httpStatus = require("../util/httpStatus");
@@ -13,8 +14,15 @@ const errorHandler = (err, req, res, _next) => {
   });
 };
 
-
+const notFound = (req, res, next) => {
+  const error = new ApiError(
+    httpStatus.notFound,
+    `Not Found - ${req.originalUrl}`
+  );
+  next(error);
+};
 
 module.exports = {
-  errorHandler
+  errorHandler,
+  notFound
 };
