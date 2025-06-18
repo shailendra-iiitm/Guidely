@@ -51,6 +51,29 @@ const updateService = async (req, res, next) => {
 };
 
 
+// Get all services by guide
+const getServiceByGuide = async (req, res, next) => {
+  const guideId = req.user._id;
+
+  const services = await serviceService.getServiceByGuide(guideId);
+
+  res.status(httpStatus.ok).json({
+    success: true,
+    services,
+  });
+};
+
+// Get any service by ID
+const getServiceById = async (req, res, next) => {
+  const serviceId = req.params.serviceId;
+  const service = await serviceService.getServiceById(serviceId);
+
+  res.status(httpStatus.ok).json({
+    success: true,
+    service,
+  });
+};
+
 
 
 
