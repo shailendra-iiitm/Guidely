@@ -7,9 +7,10 @@ const authRoute = require("./auth.route");
 const serviceRoute = require("./service.route");
 const userRoute = require("./user.route");
 const availabilityRoute = require("./availability.route");
-const mentorRoute = require("./mentor.route");
 const bookingRoute = require("./booking.route");
 const webhookRoute = require("./webhook.route");
+const guideRoute = require("./guide.route");
+
 
 const Routes = [
   {
@@ -34,7 +35,7 @@ const Routes = [
   },
   {
     path: "/mentor",
-    route: mentorRoute,
+    route: guideRoute,
   },
   {
     path: "/booking",
