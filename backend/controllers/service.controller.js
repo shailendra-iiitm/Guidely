@@ -24,6 +24,37 @@ const createService = async (req, res, next) => {
   });
 };
 
+// Guide updates a service they own
+const updateService = async (req, res, next) => {
+  const serviceId = req.params.serviceId;
+  const guideId = req.user._id;
+  const { name, description, duration, price, active } = req.body;
+
+  const updatedService = await serviceService.updateService(
+    serviceId,
+    guideId,
+    { name, description, duration, price, active }
+  );
+
+  if (!updatedService) {
+    throw new ApiError(
+      httpStatus.notFound,
+      "Service not found or you don't have permission to update it"
+    );
+  }
+
+  res.status(httpStatus.ok).json({
+    success: true,
+    message: "Service updated successfully",
+    service: updatedService,
+  });
+};
+
+
+
+
+
 module.exports = {
-  createService
+  createService,
+    updateService,
 };
