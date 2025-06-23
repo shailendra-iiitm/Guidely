@@ -287,7 +287,7 @@ const Home = () => {
                   Guide Reviews & Ratings
                 </h6>
                 <p className="mb-3 text-sm text-gray-900">
-                  Browse verified reviews and ratings from other students to
+                  Browse verified reviews and ratings from other our past learneres to
                   find the Guide that matches your learning style and
                   expectations.
                 </p>
@@ -598,6 +598,199 @@ const Home = () => {
             </div>
           </div>
         </section>
+
+        {/* Guide Categories Section */}
+        <section className="px-8 py-20 bg-white">
+          <div>
+            <div className="flex flex-col px-4 py-16 mx-auto sm:max-w-xl md:max-w-full lg:max-w-screen-xl md:px-24 lg:px-8 lg:py-20 lg:flex-row">
+              <div className="mb-5 lg:w-1/3 lg:mb-0 lg:mr-20">
+                <h2 className="relative mb-4 font-sans text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl sm:leading-none">
+                  <span className="relative inline-block">
+                    <svg
+                      viewBox="0 0 52 24"
+                      fill="currentColor"
+                      className="absolute top-0 left-0 z-0 hidden w-32 -mt-8 -ml-20 text-blue-gray-100 lg:w-32 lg:-ml-28 lg:-mt-10 sm:block"
+                    >
+                      <defs>
+                        <pattern
+                          id="6bfa0e57-faa2-4bb2-ac0e-310782e5eb2d"
+                          x="0"
+                          y="0"
+                          width=".135"
+                          height=".30"
+                        >
+                          <circle cx="1" cy="1" r=".7" />
+                        </pattern>
+                      </defs>
+                      <rect
+                        fill="url(#6bfa0e57-faa2-4bb2-ac0e-310782e5eb2d)"
+                        width="52"
+                        height="24"
+                      />
+                    </svg>
+                  </span>{" "}
+                  Find the Perfect Guide for Your Journey
+                </h2>
+                <p className="mb-4 text-gray-900 lg:mb-6">
+                  Explore a wide range of guide categories to find the perfect
+                  match for your personal or professional growth. Our guides
+                  are ready to guide you in mastering new skills, overcoming
+                  challenges, and achieving your goals.
+                </p>
+                <a
+                  href="/"
+                  aria-label=""
+                  className="inline-flex items-center font-semibold text-purple-400 transition-colors duration-200 hover:text-purple-800"
+                >
+                  Learn more
+                  <svg
+                    className="inline-block w-3 ml-2"
+                    fill="currentColor"
+                    viewBox="0 0 12 12"
+                  >
+                    <path d="M9.707,5.293l-5-5A1,1,0,0,0,3.293,1.707L7.586,6,3.293,10.293a1,1,0,1,0,1.414,1.414l5-5A1,1,0,0,0,9.707,5.293Z" />
+                  </svg>
+                </a>
+              </div>
+              <div className="flex-grow pt-1">
+                <div className="flex items-center mb-3">
+                  <span className="font-bold tracking-wide text-gray-900">
+                    Categories
+                  </span>
+                  <span className="ml-1">
+                    <svg
+                      className="w-5 h-5 mt-px text-purple-400"
+                      stroke="currentColor"
+                      viewBox="0 0 52 52"
+                    >
+                      <polygon
+                        strokeWidth="4"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        fill="none"
+                        points="29 13 14 29 25 29 23 39 38 23 27 23"
+                      />
+                    </svg>
+                  </span>
+                </div>
+                <div className="grid grid-cols-2 gap-x-10 gap-y-40 sm:grid-cols-3">
+                  <ul className="space-y-4">
+                    <li>
+                      <a
+                        href="/"
+                        className="text-purple-400 transition-colors duration-300 hover:text-purple-700 hover:underline"
+                      >
+                        Career Growth Guides
+                      </a>
+                    </li>
+                    <li>
+                      <a
+                        href="/"
+                        className="text-purple-400 transition-colors duration-300 hover:text-purple-700 hover:underline"
+                      >
+                        Skill Development Guides
+                      </a>
+                    </li>
+                    <li>
+                      <a
+                        href="/"
+                        className="text-purple-400 transition-colors duration-300 hover:text-purple-700 hover:underline"
+                      >
+                        Entrepreneurship Guides
+                      </a>
+                    </li>
+                    <li>
+                      <a
+                        href="/"
+                        className="text-purple-400 transition-colors duration-300 hover:text-purple-700 hover:underline"
+                      >
+                        Freelancing & Gig Economy Guides
+                      </a>
+                    </li>
+                  </ul>
+                  <ul className="space-y-4">
+                    <li>
+                      <a
+                        href="/"
+                        className="text-purple-400 transition-colors duration-300 hover:text-purple-700 hover:underline"
+                      >
+                        Tech & Engineering Guides
+                      </a>
+                    </li>
+                    <li>
+                      <a
+                        href="/"
+                        className="text-purple-400 transition-colors duration-300 hover:text-purple-700 hover:underline"
+                      >
+                        Creative Arts Guides
+                      </a>
+                    </li>
+                    <li>
+                      <a
+                        href="/"
+                        className="text-purple-400 transition-colors duration-300 hover:text-purple-700 hover:underline"
+                      >
+                        Marketing & Sales Guides
+                      </a>
+                    </li>
+                    <li>
+                      <a
+                        href="/"
+                        className="text-purple-400 transition-colors duration-300 hover:text-purple-700 hover:underline"
+                      >
+                        Finance & Investment Guides
+                      </a>
+                    </li>
+                  </ul>
+                  <ul className="space-y-4">
+                    <li>
+                      <a
+                        href="/"
+                        className="text-purple-400 transition-colors duration-300 hover:text-purple-700 hover:underline"
+                      >
+                        Health & Wellness Guides
+                      </a>
+                    </li>
+                    <li>
+                      <a
+                        href="/"
+                        className="text-purple-400 transition-colors duration-300 hover:text-purple-700 hover:underline"
+                      >
+                        Education & Teaching Guides
+                      </a>
+                    </li>
+                    <li>
+                      <a
+                        href="/"
+                        className="text-purple-400 transition-colors duration-300 hover:text-purple-700 hover:underline"
+                      >
+                        Personal Development Guides
+                      </a>
+                    </li>
+
+                    <li>
+                      <a
+                        href="/"
+                        className="text-purple-400 transition-colors duration-300 hover:text-purple-700 hover:underline"
+                      >
+                        Social Impact Guides
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <div className="relative">
+              <img
+                className="object-cover w-full h-56 sm:h-96"
+                src="https://images.pexels.com/photos/3184419/pexels-photo-3184419.jpeg?auto=compress&amp;cs=tinysrgb&amp;dpr=2&amp;h=750&amp;w=1260"
+                alt=""
+              />
+              <div className="absolute inset-0 bg-gray-900 bg-opacity-50" />
+            </div>
+          </div>
+        </section>
+
 
 
 
