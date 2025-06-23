@@ -1034,7 +1034,7 @@ const Home = () => {
           </div>
         </section>
 
-           {/* Call to Action */}
+           {/* Campaign & Call to Guidely */}
         <section className="px-8 py-20 text-center text-white bg-purple-600">
           <h2 className="mb-6 text-4xl font-bold">
             Ready to Find Your Guide?
