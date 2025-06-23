@@ -335,6 +335,280 @@ const Home = () => {
           </div>
         </section>
 
+         {/* How It Works Section */}
+        <section className="px-8 py-20 text-center bg-gray-50">
+          <div className="px-4 py-16 mx-auto sm:max-w-xl md:max-w-full lg:max-w-screen-xl md:px-24 lg:px-8 lg:py-20">
+            <div className="max-w-xl mb-10 md:mx-auto sm:text-center lg:max-w-2xl md:mb-12">
+              <h2 className="max-w-lg mb-6 font-sans text-3xl font-bold leading-none tracking-tight text-gray-900 sm:text-4xl md:mx-auto">
+                <span className="relative inline-block">
+                  <svg
+                    viewBox="0 0 52 24"
+                    fill="currentColor"
+                    className="absolute top-0 left-0 z-0 hidden w-32 -mt-8 -ml-20 text-blue-gray-100 lg:w-32 lg:-ml-28 lg:-mt-10 sm:block"
+                  >
+                    <defs>
+                      <pattern
+                        id="ea469ae8-e6ec-4aca-8875-fc402da4d16e"
+                        x="0"
+                        y="0"
+                        width=".135"
+                        height=".30"
+                      >
+                        <circle cx="1" cy="1" r=".7" />
+                      </pattern>
+                    </defs>
+                    <rect
+                      fill="url(#ea469ae8-e6ec-4aca-8875-fc402da4d16e)"
+                      width="52"
+                      height="24"
+                    />
+                  </svg>
+                </span>{" "}
+                "Your Path to Success, Step by Step"
+              </h2>
+              <p className="text-base text-gray-700 md:text-lg">
+                Guidely makes finding and connecting with the right Guides
+                simple and effective. Follow these easy steps to start your
+                personalized guidance journey today, and unlock the guidance
+                and expertise you need to achieve your goals.
+              </p>
+            </div>
+            <div className="grid gap-6 row-gap-10 lg:grid-cols-2">
+              <div className="lg:py-6 lg:pr-16">
+                <div className="flex">
+                  <div className="flex flex-col items-center mr-4">
+                    <div>
+                      <div className="flex items-center justify-center w-10 h-10 border rounded-full">
+                        <svg
+                          className="w-4 text-gray-600"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          viewBox="0 0 24 24"
+                        >
+                          <line
+                            fill="none"
+                            strokeMiterlimit="10"
+                            x1="12"
+                            y1="2"
+                            x2="12"
+                            y2="22"
+                          />
+                          <polyline
+                            fill="none"
+                            strokeMiterlimit="10"
+                            points="19,15 12,22 5,15"
+                          />
+                        </svg>
+                      </div>
+                    </div>
+                    <div className="w-px h-full bg-gray-300" />
+                  </div>
+                  <div className="pt-1 pb-8 text-start">
+                    <p className="mb-2 text-lg font-bold">Sign Up</p>
+                    <p className="text-gray-700">
+                      Start the journey by creating a profile.
+                    </p>
+                  </div>
+                </div>
+                <div className="flex">
+                  <div className="flex flex-col items-center mr-4">
+                    <div>
+                      <div className="flex items-center justify-center w-10 h-10 border rounded-full">
+                        <svg
+                          className="w-4 text-gray-600"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          viewBox="0 0 24 24"
+                        >
+                          <line
+                            fill="none"
+                            strokeMiterlimit="10"
+                            x1="12"
+                            y1="2"
+                            x2="12"
+                            y2="22"
+                          />
+                          <polyline
+                            fill="none"
+                            strokeMiterlimit="10"
+                            points="19,15 12,22 5,15"
+                          />
+                        </svg>
+                      </div>
+                    </div>
+                    <div className="w-px h-full bg-gray-300" />
+                  </div>
+                  <div className="pt-1 pb-8 text-start">
+                    <p className="mb-2 text-lg font-bold">Browse Guides</p>
+                    <p className="text-gray-700">
+                      Search and explore Guides based on your specific needs.
+                    </p>
+                  </div>
+                </div>
+                <div className="flex">
+                  <div className="flex flex-col items-center mr-4">
+                    <div>
+                      <div className="flex items-center justify-center w-10 h-10 border rounded-full">
+                        <svg
+                          className="w-4 text-gray-600"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          viewBox="0 0 24 24"
+                        >
+                          <line
+                            fill="none"
+                            strokeMiterlimit="10"
+                            x1="12"
+                            y1="2"
+                            x2="12"
+                            y2="22"
+                          />
+                          <polyline
+                            fill="none"
+                            strokeMiterlimit="10"
+                            points="19,15 12,22 5,15"
+                          />
+                        </svg>
+                      </div>
+                    </div>
+                    <div className="w-px h-full bg-gray-300" />
+                  </div>
+                  <div className="pt-1 pb-8 text-start">
+                    <p className="mb-2 text-lg font-bold">Select Your Guide</p>
+                    <p className="text-gray-700">
+                      Check Guide profiles and reviews to find the perfect fit.
+                    </p>
+                  </div>
+                </div>
+                <div className="flex">
+                  <div className="flex flex-col items-center mr-4">
+                    <div>
+                      <div className="flex items-center justify-center w-10 h-10 border rounded-full">
+                        <svg
+                          className="w-4 text-gray-600"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          viewBox="0 0 24 24"
+                        >
+                          <line
+                            fill="none"
+                            strokeMiterlimit="10"
+                            x1="12"
+                            y1="2"
+                            x2="12"
+                            y2="22"
+                          />
+                          <polyline
+                            fill="none"
+                            strokeMiterlimit="10"
+                            points="19,15 12,22 5,15"
+                          />
+                        </svg>
+                      </div>
+                    </div>
+                    <div className="w-px h-full bg-gray-300" />
+                  </div>
+                  <div className="pt-1 pb-8 text-start">
+                    <p className="mb-2 text-lg font-bold">Book a Session</p>
+                    <p className="text-gray-700">
+                      Schedule sessions at a time that works for you.
+                    </p>
+                  </div>
+                </div>
+                <div className="flex">
+                  <div className="flex flex-col items-center mr-4">
+                    <div>
+                      <div className="flex items-center justify-center w-10 h-10 border rounded-full">
+                        <svg
+                          className="w-4 text-gray-600"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          viewBox="0 0 24 24"
+                        >
+                          <line
+                            fill="none"
+                            strokeMiterlimit="10"
+                            x1="12"
+                            y1="2"
+                            x2="12"
+                            y2="22"
+                          />
+                          <polyline
+                            fill="none"
+                            strokeMiterlimit="10"
+                            points="19,15 12,22 5,15"
+                          />
+                        </svg>
+                      </div>
+                    </div>
+                    <div className="w-px h-full bg-gray-300" />
+                  </div>
+                  <div className="pt-1 pb-8 text-start">
+                    <p className="mb-2 text-lg font-bold">Start Learning</p>
+                    <p className="text-gray-700">
+                      Begin your customized  journey and achieve your
+                      goals.
+                    </p>
+                  </div>
+                </div>
+                <div className="flex">
+                  <div className="flex flex-col items-center mr-4">
+                    <div>
+                      <div className="flex items-center justify-center w-10 h-10 border rounded-full">
+                        <svg
+                          className="w-6 text-gray-600"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <polyline
+                            fill="none"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeMiterlimit="10"
+                            points="6,12 10,16 18,8"
+                          />
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="pt-1">
+                    <p className="mb-2 text-lg font-bold">Success</p>
+                    <p className="text-gray-700" />
+                  </div>
+                </div>
+              </div>
+              <div className="relative">
+                <img
+                  className="inset-0 object-cover object-bottom w-full rounded shadow-lg h-96 lg:absolute lg:h-full"
+                  src="https://images.pexels.com/photos/3184287/pexels-photo-3184287.jpeg?auto=compress&amp;cs=tinysrgb&amp;dpr=2&amp;h=750&amp;w=1260"
+                  alt=""
+                />
+              </div>
+            </div>
+          </div>
+        </section>
+
+
+
+
+
+
+
+
+
+
+
           </div>
 
 
