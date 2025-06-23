@@ -115,14 +115,227 @@ const Home = () => {
           </div>
         </section>
 
+       {/* Features Section */}
+        <section className="px-8 py-20 bg-white">
+          <div className="px-4 py-16 mx-auto sm:max-w-xl md:max-w-full lg:max-w-screen-xl md:px-24 lg:px-8 lg:py-20">
+            <div className="max-w-xl mb-10 md:mx-auto sm:text-center lg:max-w-2xl md:mb-12">
+              <h2 className="max-w-lg mb-6 font-sans text-3xl font-bold leading-none tracking-tight text-gray-900 sm:text-4xl md:mx-auto">
+                <span className="relative inline-block">
+                  <svg viewBox="0 0 52 24" fill="currentColor" className="absolute top-0 left-0 z-0 hidden w-32 -mt-8 -ml-20 text-blue-gray-100 lg:w-32 lg:-ml-28 lg:-mt-10 sm:block">
+                    <defs>
+                      <pattern id="ea469ae8-e6ec-4aca-8875-fc402da4d16e" x="0" y="0" width=".135" height=".30">
+                        <circle cx="1" cy="1" r=".7" />
+                      </pattern>
+                    </defs>
+                    <rect fill="url(#ea469ae8-e6ec-4aca-8875-fc402da4d16e)" width="52" height="24" />
+                  </svg>
+                </span>{" "}
+                "Real Guidance, Real Results"
+              </h2>
+              <p className="text-base text-gray-700 md:text-lg">
+                At Guidely, you’re matched with real guides for your goals—career, skills, wellness, and more. Everything is built to be personal, accessible, and impactful.
+              </p>
+            </div>
 
+            <div className="grid gap-8 row-gap-10 lg:grid-cols-2">
+              <div className="max-w-md sm:mx-auto sm:text-center">
+                <div className="flex items-center justify-center w-16 h-16 mb-4 rounded-full bg-indigo-50 sm:mx-auto sm:w-24 sm:h-24">
+                  <svg
+                    className="w-12 h-12 text-purple-600 sm:w-16 sm:h-16"
+                    stroke="currentColor"
+                    viewBox="0 0 52 52"
+                  >
+                    <polygon
+                      strokeWidth="3"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      fill="none"
+                      points="29 13 14 29 25 29 23 39 38 23 27 23"
+                    />
+                  </svg>
+                </div>
+                <h6 className="mb-3 text-xl font-bold leading-5">
+                  Expert Guidance
+                </h6>
+                <p className="mb-3 text-sm text-gray-900">
+                  Get one-on-one guidance from professionals who have years of
+                  experience in their fields. They are here to help you navigate
+                  your career with personalized advice.
+                </p>
+                <a
+                  href="/"
+                  aria-label=""
+                  className="inline-flex items-center font-semibold text-purple-400 transition-colors duration-200 hover:text-deep-purple-800"
+                >
+                  Learn more
+                </a>
+              </div>
+              <div className="max-w-md sm:mx-auto sm:text-center">
+                <div className="flex items-center justify-center w-16 h-16 mb-4 rounded-full bg-indigo-50 sm:mx-auto sm:w-24 sm:h-24">
+                  <svg
+                    className="w-12 h-12 text-purple-600 sm:w-16 sm:h-16"
+                    stroke="currentColor"
+                    viewBox="0 0 52 52"
+                  >
+                    <polygon
+                      strokeWidth="3"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      fill="none"
+                      points="29 13 14 29 25 29 23 39 38 23 27 23"
+                    />
+                  </svg>
+                </div>
+                <h6 className="mb-3 text-xl font-bold leading-5">
+                  Tailored Learning Paths
+                </h6>
+                <p className="mb-3 text-sm text-gray-900">
+                  Choose from a variety of expert guides that specialize in what you
+                  need. Your learning goals and challenges will be the priority
+                  in a guidance plan designed just for you.
+                </p>
+                <a
+                  href="/"
+                  aria-label=""
+                  className="inline-flex items-center font-semibold text-purple-400 transition-colors duration-200 hover:text-deep-purple-800"
+                >
+                  Learn more
+                </a>
+              </div>
+              <div className="max-w-md sm:mx-auto sm:text-center">
+                <div className="flex items-center justify-center w-16 h-16 mb-4 rounded-full bg-indigo-50 sm:mx-auto sm:w-24 sm:h-24">
+                  <svg
+                    className="w-12 h-12 text-purple-600 sm:w-16 sm:h-16"
+                    stroke="currentColor"
+                    viewBox="0 0 52 52"
+                  >
+                    <polygon
+                      strokeWidth="3"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      fill="none"
+                      points="29 13 14 29 25 29 23 39 38 23 27 23"
+                    />
+                  </svg>
+                </div>
+                <h6 className="mb-3 text-xl font-bold leading-5">
+                  Flexible Scheduling
+                </h6>
+                <p className="mb-3 text-sm text-gray-900">
+                  Set your sessions based on your availability. Our Guides
+                  offer flexible timings so you can fit learning into your
+                  schedule without hassle.
+                </p>
+                <a
+                  href="/"
+                  aria-label=""
+                  className="inline-flex items-center font-semibold text-purple-400 transition-colors duration-200 hover:text-deep-purple-800"
+                >
+                  Learn more
+                </a>
+              </div>
+              <div className="max-w-md sm:mx-auto sm:text-center">
+                <div className="flex items-center justify-center w-16 h-16 mb-4 rounded-full bg-indigo-50 sm:mx-auto sm:w-24 sm:h-24">
+                  <svg
+                    className="w-12 h-12 text-purple-600 sm:w-16 sm:h-16"
+                    stroke="currentColor"
+                    viewBox="0 0 52 52"
+                  >
+                    <polygon
+                      strokeWidth="3"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      fill="none"
+                      points="29 13 14 29 25 29 23 39 38 23 27 23"
+                    />
+                  </svg>
+                </div>
+                <h6 className="mb-3 text-xl font-bold leading-5">
+                  Goal-Oriented Sessions
+                </h6>
+                <p className="mb-3 text-sm text-gray-900">
+                  Our Guides are dedicated to helping you achieve tangible
+                  results. Whether you're aiming to learn a new skill, get
+                  career advice, or grow professionally, your success is our
+                  goal.
+                </p>
+                <a
+                  href="/"
+                  aria-label=""
+                  className="inline-flex items-center font-semibold text-purple-400 transition-colors duration-200 hover:text-deep-purple-800"
+                >
+                  Learn more
+                </a>
+              </div>
+              <div className="max-w-md sm:mx-auto sm:text-center">
+                <div className="flex items-center justify-center w-16 h-16 mb-4 rounded-full bg-indigo-50 sm:mx-auto sm:w-24 sm:h-24">
+                  <svg
+                    className="w-12 h-12 text-purple-600 sm:w-16 sm:h-16"
+                    stroke="currentColor"
+                    viewBox="0 0 52 52"
+                  >
+                    <polygon
+                      strokeWidth="3"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      fill="none"
+                      points="29 13 14 29 25 29 23 39 38 23 27 23"
+                    />
+                  </svg>
+                </div>
+                <h6 className="mb-3 text-xl font-bold leading-5">
+                  Guide Reviews & Ratings
+                </h6>
+                <p className="mb-3 text-sm text-gray-900">
+                  Browse verified reviews and ratings from other students to
+                  find the Guide that matches your learning style and
+                  expectations.
+                </p>
+                <a
+                  href="/"
+                  aria-label=""
+                  className="inline-flex items-center font-semibold text-purple-400 transition-colors duration-200 hover:text-deep-purple-800"
+                >
+                  Learn more
+                </a>
+              </div>
+              <div className="max-w-md sm:mx-auto sm:text-center">
+                <div className="flex items-center justify-center w-16 h-16 mb-4 rounded-full bg-indigo-50 sm:mx-auto sm:w-24 sm:h-24">
+                  <svg
+                    className="w-12 h-12 text-purple-600 sm:w-16 sm:h-16"
+                    stroke="currentColor"
+                    viewBox="0 0 52 52"
+                  >
+                    <polygon
+                      strokeWidth="3"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      fill="none"
+                      points="29 13 14 29 25 29 23 39 38 23 27 23"
+                    />
+                  </svg>
+                </div>
+                <h6 className="mb-3 text-xl font-bold leading-5">
+                  Seamless Onboarding
+                </h6>
+                <p className="mb-3 text-sm text-gray-900">
+                  Easily create an account, browse Guides, and schedule your
+                  first session in just a few clicks. Start your learning
+                  journey in no time.
+                </p>
+                <a
+                  href="/"
+                  aria-label=""
+                  className="inline-flex items-center font-semibold text-purple-400 transition-colors duration-200 hover:text-deep-purple-800"
+                >
+                  Learn more
+                </a>
+              </div>
+            </div>
+          </div>
+        </section>
 
-
-
-
-
-
-      </div>
+          </div>
 
 
 
