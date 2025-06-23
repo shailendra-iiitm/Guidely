@@ -796,7 +796,7 @@ const Home = () => {
         <section className="px-8 py-20 text-center bg-white">
           <h2 className="mb-12 text-4xl font-bold">Affordable Pricing</h2>
           <p className="max-w-4xl mx-auto mb-6 text-xl text-gray-700">
-            We offer affordable plans for both students and Guides. Get started
+            We offer affordable plans for both learners and Guides. Get started
             with a free account and explore paid  options that fit
             your needs.
           </p>
@@ -882,7 +882,7 @@ const Home = () => {
                     Signing up as a Guide is simple! Just click on the "Become
                     a Guide" button, fill in your details, and select your
                     areas of expertise. Once approved, you'll be able to start
-                    guieding students.
+                    guiding.
                   </p>
                 </div>
               </div>
@@ -1034,7 +1034,42 @@ const Home = () => {
           </div>
         </section>
 
-</div>
-</>);};
+           {/* Call to Action */}
+        <section className="px-8 py-20 text-center text-white bg-purple-600">
+          <h2 className="mb-6 text-4xl font-bold">
+            Ready to Find Your Guide?
+          </h2>
+          <p className="mb-8 text-xl">
+            Join Guidely today and connect with experienced professionals who
+            can guide you through your journey!
+          </p>
+          <button className="px-8 py-3 font-semibold text-purple-600 transition bg-white rounded-lg hover:bg-gray-200">
+            Get Started Now
+          </button>
+        </section>
+
+        {/* Footer */}
+        <footer className="px-8 py-10 text-white bg-gray-900">
+          <div className="max-w-6xl mx-auto text-center">
+            <p>Follow us on social media for updates and tips!</p>
+            <p className="mt-4">
+              <a href="#" className="hover:text-[#00DFBD]">
+                Facebook
+              </a>{" "}
+              |{" "}
+              <a href="#" className="hover:text-[#00DFBD]">
+                Twitter
+              </a>{" "}
+              |{" "}
+              <a href="#" className="hover:text-[#00DFBD]">
+                LinkedIn
+              </a>
+            </p>
+            <p className="mt-4">© 2024 Guidely. All Rights Reserved.</p>
+          </div>
+        </footer>
+      </div>
+</>);
+};
 
 export default Home;
