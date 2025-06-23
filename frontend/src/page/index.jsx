@@ -792,27 +792,249 @@ const Home = () => {
         </section>
 
 
+         {/* Pricing Section */}
+        <section className="px-8 py-20 text-center bg-white">
+          <h2 className="mb-12 text-4xl font-bold">Affordable Pricing</h2>
+          <p className="max-w-4xl mx-auto mb-6 text-xl text-gray-700">
+            We offer affordable plans for both students and Guides. Get started
+            with a free account and explore paid  options that fit
+            your needs.
+          </p>
+          <button className="px-6 py-3 text-white transition bg-purple-600 rounded-lg hover:bg-purple-800">
+            Learn More About Pricing
+          </button>
+        </section>
 
+        {/* FAQs Section */}
+        <section className="px-6 py-16 bg-white">
+          <div className="max-w-screen-lg mx-auto">
+            <h2 className="mb-10 text-4xl font-bold text-center text-gray-900">
+              Frequently Asked Questions
+            </h2>
 
+            <div className="space-y-4">
+              <div className="pb-4 border-b border-gray-300">
+                <button
+                  className="flex items-center justify-between w-full text-lg font-medium text-gray-900 transition-colors hover:text-purple-600"
+                  onClick={() => toggleFAQ(1)}
+                >
+                  What is Guidely?
+                  <span className="ml-4 transition-transform transform rotate-0 group-hover:rotate-180">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="w-6 h-6"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      fill="none"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M19 9l-7 7-7-7"
+                      />
+                    </svg>
+                  </span>
+                </button>
+                <div
+                  className={`mt-2 text-gray-700 transition-height duration-300 ease-in-out ${
+                    isOpen[1] ? "max-h-screen" : "max-h-0 overflow-hidden"
+                  }`}
+                >
+                  <p>
+                    Guidely is an online platform connecting mentees with
+                    experienced Guides across various fields like technology,
+                    business, health, and more, to help them grow and achieve
+                    their goals.
+                  </p>
+                </div>
+              </div>
 
+              <div className="pb-4 border-b border-gray-300">
+                <button
+                  className="flex items-center justify-between w-full text-lg font-medium text-gray-900 transition-colors hover:text-purple-600"
+                  onClick={() => toggleFAQ(2)}
+                >
+                  How do I sign up as a Guide?
+                  <span className="ml-4 transition-transform transform rotate-0 group-hover:rotate-180">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="w-6 h-6"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      fill="none"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M19 9l-7 7-7-7"
+                      />
+                    </svg>
+                  </span>
+                </button>
+                <div
+                  className={`mt-2 text-gray-700 transition-height duration-300 ease-in-out ${
+                    isOpen[2] ? "max-h-screen" : "max-h-0 overflow-hidden"
+                  }`}
+                >
+                  <p>
+                    Signing up as a Guide is simple! Just click on the "Become
+                    a Guide" button, fill in your details, and select your
+                    areas of expertise. Once approved, you'll be able to start
+                    guieding students.
+                  </p>
+                </div>
+              </div>
 
+              <div className="pb-4 border-b border-gray-300">
+                <button
+                  className="flex items-center justify-between w-full text-lg font-medium text-gray-900 transition-colors hover:text-purple-600"
+                  onClick={() => toggleFAQ(3)}
+                >
+                  Can I choose my Guide?
+                  <span className="ml-4 transition-transform transform rotate-0 group-hover:rotate-180">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="w-6 h-6"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      fill="none"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M19 9l-7 7-7-7"
+                      />
+                    </svg>
+                  </span>
+                </button>
+                <div
+                  className={`mt-2 text-gray-700 transition-height duration-300 ease-in-out ${
+                    isOpen[3] ? "max-h-screen" : "max-h-0 overflow-hidden"
+                  }`}
+                >
+                  <p>
+                    Yes! You can browse through available Guides, check their
+                    expertise, and select the one that fits your goals and
+                    preferences.
+                  </p>
+                </div>
+              </div>
 
+              <div className="pb-4 border-b border-gray-300">
+                <button
+                  className="flex items-center justify-between w-full text-lg font-medium text-gray-900 transition-colors hover:text-purple-600"
+                  onClick={() => toggleFAQ(4)}
+                >
+                  What are the costs involved?
+                  <span className="ml-4 transition-transform transform rotate-0 group-hover:rotate-180">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="w-6 h-6"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      fill="none"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M19 9l-7 7-7-7"
+                      />
+                    </svg>
+                  </span>
+                </button>
+                <div
+                  className={`mt-2 text-gray-700 transition-height duration-300 ease-in-out ${
+                    isOpen[4] ? "max-h-screen" : "max-h-0 overflow-hidden"
+                  }`}
+                >
+                  <p>
+                    Guidely offers both free and paid  options. The
+                    pricing varies depending on the Guide's experience and
+                    session length, which will be displayed upfront.
+                  </p>
+                </div>
+              </div>
 
+              <div className="pb-4 border-b border-gray-300">
+                <button
+                  className="flex items-center justify-between w-full text-lg font-medium text-gray-900 transition-colors hover:text-purple-600"
+                  onClick={() => toggleFAQ(5)}
+                >
+                  How does the Knowledge flow  work?
+                  <span className="ml-4 transition-transform transform rotate-0 group-hover:rotate-180">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="w-6 h-6"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      fill="none"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M19 9l-7 7-7-7"
+                      />
+                    </svg>
+                  </span>
+                </button>
+                <div
+                  className={`mt-2 text-gray-700 transition-height duration-300 ease-in-out ${
+                    isOpen[5] ? "max-h-screen" : "max-h-0 overflow-hidden"
+                  }`}
+                >
+                  <p>
+                    Once you select a Guide, you can schedule sessions directly
+                    through the platform. Meeting can be conducted via video
+                    calls, messages, or email, based on your mutual preferences.
+                  </p>
+                </div>
+              </div>
 
-
-
-
+              <div className="pb-4 border-b border-gray-300">
+                <button
+                  className="flex items-center justify-between w-full text-lg font-medium text-gray-900 transition-colors hover:text-purple-600"
+                  onClick={() => toggleFAQ(6)}
+                >
+                  Is there a support system if I face issues?
+                  <span className="ml-4 transition-transform transform rotate-0 group-hover:rotate-180">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="w-6 h-6"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      fill="none"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M19 9l-7 7-7-7"
+                      />
+                    </svg>
+                  </span>
+                </button>
+                <div
+                  className={`mt-2 text-gray-700 transition-height duration-300 ease-in-out ${
+                    isOpen[6] ? "max-h-screen" : "max-h-0 overflow-hidden"
+                  }`}
+                >
+                  <p>
+                    Yes! Guidely has a dedicated support team to help you with
+                    any issues you may face, whether it's regarding finding a
+                    Guide, payment issues, or platform queries.
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
+        </section>
 
-
-
-
-
-    </>
-  );
-};
-
-
+</div>
+</>);};
 
 export default Home;
-// Home Page
