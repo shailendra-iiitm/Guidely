@@ -15,7 +15,7 @@ const updateUserPhoto = async (id, photoUrl) => {
 const updateUserProfile = async (id, profileData) => {
   return await UserModel.findByIdAndUpdate(
     id,
-    { profile: profileData },
+    profileData,
     { new: true }
   );
 };

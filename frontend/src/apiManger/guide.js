@@ -2,11 +2,11 @@ import AxiosInstances from ".";
 
 // Define the functions
 const getAllGuides = () => {
-  return AxiosInstances.get("/guide");
+  return AxiosInstances.get("/mentor");
 };
 
 const getGuideByUsername = (userName) => {
-  return AxiosInstances.get("/guide/" + userName);
+  return AxiosInstances.get("/mentor/" + userName);
 };
 
 // Assign the object to a variable

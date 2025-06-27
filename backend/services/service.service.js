@@ -19,7 +19,15 @@ const getServiceByGuide = async (guideId) => {
 };
 
 const getServiceById = async (serviceId) => {
-  return await ServiceModel.findById(serviceId);
+  try {
+    console.log("Fetching service by ID:", serviceId);
+    const service = await ServiceModel.findById(serviceId).populate('guide', 'name email');
+    console.log("Retrieved service:", service);
+    return service;
+  } catch (error) {
+    console.error("Error fetching service by ID:", error);
+    throw error;
+  }
 };
 
 module.exports = {

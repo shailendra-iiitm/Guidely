@@ -1,4 +1,4 @@
-module.export={
+module.exports={
     ok: 200,
     created: 201,
     badRequest: 400,
@@ -15,7 +15,7 @@ module.export={
     preconditionFailed: 412,
     unprocessableEntity: 422,
     paymentRequired: 402,
-    expectaionFailed: 417,
+    expectationFailed: 417,
     gone: 410,
     lengthRequired: 411,
     requestTimeout: 408,

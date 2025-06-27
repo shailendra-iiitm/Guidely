@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { Table, Button, Spin } from "antd";
 import moment from "moment";
-import Layout from "../../components/Layout";
-import bookingAPI from "../../apiManger/booking";
+import Layout from "../components/Layout";
+import bookingAPI from "../apiManger/booking";
 
 const Booking = () => {
   const [bookings, setBookings] = useState([]);

@@ -1,11 +1,11 @@
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 
-const useMentorStore = create()(
+const useGuideStore = create()(
   devtools((set) => ({
-    mentorsData: [], // Initialize with an empty array for mentors
-    setMentorsData: (mentors) => set(() => ({ mentorsData: mentors })), // Method to set mentors
+    guidesData: [], // Initialize with an empty array for guides
+    setGuidesData: (guides) => set(() => ({ guidesData: guides })), // Method to set guides
   }))
 );
 
-export default useMentorStore;
+export default useGuideStore;

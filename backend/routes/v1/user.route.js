@@ -16,7 +16,7 @@ router.post(
   "/upload-photo",
   authMiddleware.protect,
   upload.single("photo"), // Assuming 'photo' is the field name for the file
-  asyncHandler(userController.uploadPhoto)
+  userController.uploadPhoto
 );
 
 router.get("/", authMiddleware.protect, asyncHandler(userController.getUser));
@@ -26,6 +26,19 @@ router.put(
   authMiddleware.protect,
   validate(updateUserProfileValidation),
   asyncHandler(userController.updateUserProfile)
+);
+// Get user profile with ratings and achievements
+router.get(
+  "/profile",
+  authMiddleware.protect,
+  asyncHandler(userController.getUserProfile)
+);
+
+// Get specific user profile with ratings and achievements
+router.get(
+  "/profile/:userId",
+  authMiddleware.protect,
+  asyncHandler(userController.getUserProfile)
 );
 
 module.exports = router;

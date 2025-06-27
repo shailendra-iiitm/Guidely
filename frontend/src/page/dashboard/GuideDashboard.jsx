@@ -1,6 +1,6 @@
 import React from "react";
 import Sidebar from "../../components/Sidebar";
-import DashbordNavbar from "../../components/DashboardNavbar";
+import DashboardNavbar from "../../components/DashboardNavbar";
 
 const Dashboard = ({ children }) => {
   return (
@@ -8,7 +8,7 @@ const Dashboard = ({ children }) => {
       <DashboardNavbar />
       <div className="flex">
         {/* Sidebar */}
-        <Sidear />
+        <Sidebar />
 
         {/* Main Content Area */}
         <main className="flex-1">{children}</main>

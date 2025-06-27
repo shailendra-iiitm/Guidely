@@ -28,8 +28,8 @@ const SignIn = () => {
     reset();
     setUser(response.data.user);
     setToken(response.data.token);
-    // Navigate to home after successful login
-    navigate("/");
+    // Navigate to dashboard profile after successful login
+    navigate("/dashboard/profile");
     toast.success("Login successful!");
 
     setIsLoading(false);

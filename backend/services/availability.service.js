@@ -35,14 +35,30 @@ const getAvailability = async (userId) => {
 
 const getGuideAvailabilityForNext14Days = async (userId, durationInMinutes) => {
   try {
+    console.log(`Fetching availability for guide: ${userId}, duration: ${durationInMinutes}`);
+    
     // Fetch the guide's availability by userId
     const guideAvailability = await AvailabilityModel.findOne({ userId });
 
     if (!guideAvailability) {
-      throw new ApiError(httpStatus.notFound, "Guide availability not found.");
+      console.log(`No availability found for guide: ${userId}`);
+      // Return empty array instead of throwing error for guides without availability
+      return [];
     }
 
+    console.log(`Found availability for guide: ${userId}`, {
+      hasWeeklyAvailability: !!guideAvailability.weeklyAvailability,
+      unavailableDatesCount: guideAvailability.unavailableDates?.length || 0
+    });
+
     const { weeklyAvailability, unavailableDates } = guideAvailability;
+    
+    // Validate weeklyAvailability exists and is an object
+    if (!weeklyAvailability || typeof weeklyAvailability !== 'object') {
+      console.log(`Invalid weeklyAvailability for guide: ${userId}`);
+      return [];
+    }
+    
     const unavailableDateSet = new Set(
       (unavailableDates || []).map((date) => moment(date).format("YYYY-MM-DD"))
     );
@@ -94,6 +110,11 @@ const getGuideAvailabilityForNext14Days = async (userId, durationInMinutes) => {
       const dailyAvailability = weeklyAvailability[dayOfWeek] || [];
       const slotsForDay = [];
 
+      if (dailyAvailability.length === 0) {
+        console.log(`No availability for ${dayOfWeek} (${currentDate})`);
+        continue;
+      }
+
       dailyAvailability.forEach((slot) => {
         const slots = getSlots(
           currentDate,
@@ -118,10 +139,14 @@ const getGuideAvailabilityForNext14Days = async (userId, durationInMinutes) => {
       }
     }
 
+    console.log(`Generated ${next14DaysAvailability.length} days of availability for guide: ${userId}`);
     return next14DaysAvailability;
   } catch (error) {
     console.error("Error fetching guide availability:", error);
-    return { error: "Error retrieving guide availability." };
+    throw new ApiError(
+      httpStatus.internalServerError, 
+      "Error retrieving guide availability."
+    );
   }
 };
 

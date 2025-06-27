@@ -26,6 +26,14 @@ router.get(
   asyncHandler(availabilityController.getAvailability)
 );
 
+router.put(
+  "/",
+  authMiddleware.protect,
+  authMiddleware.restrictTo("guide"),
+  validate(createAvailabilityValidation),
+  asyncHandler(availabilityController.updateAvailability)
+);
+
 router.get(
   "/:guideId",
   authMiddleware.protect,

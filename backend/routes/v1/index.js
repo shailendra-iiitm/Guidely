@@ -10,6 +10,8 @@ const availabilityRoute = require("./availability.route");
 const bookingRoute = require("./booking.route");
 const webhookRoute = require("./webhook.route");
 const guideRoute = require("./guide.route");
+const learningProgressRoute = require("./learningProgress.route");
+const paymentRoute = require("./payment.route");
 
 
 const Routes = [
@@ -40,6 +42,14 @@ const Routes = [
   {
     path: "/booking",
     route: bookingRoute,
+  },
+  {
+    path: "/learning-progress",
+    route: learningProgressRoute,
+  },
+  {
+    path: "/payment",
+    route: paymentRoute,
   },
   {
     path: "/webhook",

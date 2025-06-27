@@ -17,10 +17,12 @@ const weeklyAvailabilitySchema = Joi.object({
   sunday: Joi.array().items(timeSlotSchema).optional(),
 });
 
-const createAvailabilityValidation = Joi.object({
-  weeklyAvailability: weeklyAvailabilitySchema.required(),
-  unavailableDates: Joi.array().items(Joi.date()).optional(),
-});
+const createAvailabilityValidation = {
+  body: Joi.object({
+    weeklyAvailability: weeklyAvailabilitySchema.required(),
+    unavailableDates: Joi.array().items(Joi.date()).optional(),
+  })
+};
 
 module.exports = {
   createAvailabilityValidation,

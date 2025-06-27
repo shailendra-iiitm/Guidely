@@ -9,6 +9,10 @@ const createService = async (req, res, next) => {
   const guideId = req.user._id;
   const { name, description, duration, price } = req.body;
 
+  console.log("=== CREATE SERVICE ===");
+  console.log("Guide ID:", guideId);
+  console.log("Service data:", { name, description, duration, price });
+
   const service = await serviceService.createService({
     guide: guideId,
     name,
@@ -16,6 +20,8 @@ const createService = async (req, res, next) => {
     duration,
     price,
   });
+
+  console.log("Created service:", service);
 
   res.status(httpStatus.created).json({
     success: true,
@@ -54,8 +60,14 @@ const updateService = async (req, res, next) => {
 // Get all services by guide
 const getServiceByGuide = async (req, res, next) => {
   const guideId = req.user._id;
+  
+  console.log("=== GET SERVICES BY GUIDE ===");
+  console.log("Guide ID:", guideId);
 
   const services = await serviceService.getServiceByGuide(guideId);
+  
+  console.log("Found services:", services.length);
+  console.log("Services:", services);
 
   res.status(httpStatus.ok).json({
     success: true,
@@ -79,5 +91,7 @@ const getServiceById = async (req, res, next) => {
 
 module.exports = {
   createService,
-    updateService,
+  updateService,
+  getServiceByGuide,
+  getServiceById,
 };

@@ -44,23 +44,63 @@ const getAvailability = async (req, res, next) => {
 };
 
 const getNext14DaysAvailability = async (req, res, next) => {
-  const guideId = req.params.guideId; // Use "guideId" in param!
-  const durationInMinutes = req.query.durationInMinutes || 30;
+  try {
+    const guideId = req.params.guideId;
+    const durationInMinutes = req.query.duration || req.query.durationInMinutes || 30;
 
-  const availability =
-    await availabilityService.getGuideAvailabilityForNext14Days(
+    console.log("Getting availability for guideId:", guideId);
+    console.log("Duration:", durationInMinutes);
+
+    // Validate guideId
+    if (!guideId) {
+      return next(new ApiError(httpStatus.badRequest, "Guide ID is required"));
+    }
+
+    // Validate duration
+    if (isNaN(durationInMinutes) || durationInMinutes <= 0) {
+      return next(new ApiError(httpStatus.badRequest, "Invalid duration"));
+    }
+
+    const availability = await availabilityService.getGuideAvailabilityForNext14Days(
       guideId,
-      durationInMinutes
+      parseInt(durationInMinutes)
     );
 
-  res.status(httpStatus.ok).json({
-    success: true,
-    availability,
-  });
+    console.log("Retrieved availability:", availability);
+
+    res.status(httpStatus.ok).json({
+      success: true,
+      availability,
+    });
+  } catch (error) {
+    console.error("Error in getNext14DaysAvailability:", error);
+    return next(error);
+  }
+};
+
+const updateAvailability = async (req, res, next) => {
+  try {
+    const userId = req.user._id; // guide's user id
+    const availabilityData = req.body;
+
+    const availability = await availabilityService.updateAvailability(
+      userId,
+      availabilityData
+    );
+
+    res.status(httpStatus.ok).json({
+      success: true,
+      message: "Availability updated successfully",
+      availability,
+    });
+  } catch (error) {
+    return next(error);
+  }
 };
 
 module.exports = {
   createAvailability,
   getAvailability,
+  updateAvailability,
   getNext14DaysAvailability,
 };

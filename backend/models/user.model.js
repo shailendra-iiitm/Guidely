@@ -34,6 +34,20 @@ const userSchema = new Schema(
                     facebook: { type: String, default: "" },
                     website: { type: String, default: "" },
                 },
+                // Guide-specific fields
+                rating: {
+                    average: { type: Number, default: 0 },
+                    count: { type: Number, default: 0 },
+                    total: { type: Number, default: 0 }
+                },
+                // Learner-specific fields  
+                achievements: [{
+                    title: { type: String, required: true },
+                    description: { type: String, required: true },
+                    earnedAt: { type: Date, default: Date.now },
+                    category: { type: String, default: "session" },
+                    icon: { type: String, default: "trophy" }
+                }]
             },
         },
         { timestamps: true}
@@ -48,9 +62,10 @@ userSchema.methods.isPasswordMatch = async function (password) {
 //
 userSchema.pre('save', async function (next){
     if(this.isModified('password')) {
-        this.password = await bcrypt.hash(this.password, 8);}
-        next();
-    });
+        this.password = await bcrypt.hash(this.password, 8);
+    }
+    next();
+});
 
 userSchema.index({email: 1});
 

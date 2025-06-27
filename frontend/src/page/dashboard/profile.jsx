@@ -7,9 +7,8 @@ import {
   AiFillGithub,
   AiFillTwitterCircle,
   AiFillFacebook,
-  AiFillInstagram,
+  AiOutlineGlobal,
 } from "react-icons/ai";
-import Dashboard from "./dashboard";
 import useUserStore from "../../store/user";
 import userAPI from "../../apiManger/user";
 
@@ -53,13 +52,13 @@ const Profile = () => {
         tags: values.skills.split(",").map((tag) => tag.trim()),
         bio: values.bio,
         college: values.college,
-      },
-      social: {
-        linkedin: values.social?.linkedin,
-        github: values.social?.github,
-        twitter: values.social?.twitter,
-        facebook: values.social?.facebook,
-        instagram: values.social?.instagram,
+        socialLinks: {
+          linkedin: values.social?.linkedin || "",
+          github: values.social?.github || "",
+          Twitter: values.social?.twitter || "",
+          facebook: values.social?.facebook || "",
+          website: values.social?.website || "",
+        },
       },
     };
 
@@ -68,18 +67,19 @@ const Profile = () => {
       const response = await userAPI.updateUser(updatedUserData);
       setUser(response?.data.user);
       message.success("Profile updated successfully!");
+      setIsEditing(false);
     } catch (error) {
       console.error("Profile update error:", error);
-      message.error("Failed to update profile. Please try again.");
-      message.error("Failed to update profile. Please try again.");
+      const errorMessage = error.response?.data?.message || "Failed to update profile. Please try again.";
+      message.error(errorMessage);
     } finally {
       setLoading(false);
+      setIsEditing(false);
     }
   };
 
   return (
-    <Dashboard>
-      <div className="flex flex-col items-center w-full min-h-screen p-10 bg-gray-100">
+    <div className="flex flex-col items-center w-full min-h-screen p-10 bg-gray-100">
         <h2 className="mb-10 text-5xl font-bold text-center text-blue-800">
           My Profile
         </h2>
@@ -135,7 +135,7 @@ const Profile = () => {
           </h3>
           <div className="flex justify-center mt-4 space-x-6">
             <a
-              href={user?.social?.linkedin || "#"}
+              href={user?.profile?.socialLinks?.linkedin || "#"}
               target="_blank"
               rel="noopener noreferrer"
               className="text-blue-600 hover:text-blue-800"
@@ -143,7 +143,7 @@ const Profile = () => {
               <AiFillLinkedin className="text-4xl" />
             </a>
             <a
-              href={user?.social?.github || "#"}
+              href={user?.profile?.socialLinks?.github || "#"}
               target="_blank"
               rel="noopener noreferrer"
               className="text-gray-800 hover:text-gray-900"
@@ -151,7 +151,7 @@ const Profile = () => {
               <AiFillGithub className="text-4xl" />
             </a>
             <a
-              href={user?.social?.twitter || "#"}
+              href={user?.profile?.socialLinks?.Twitter || "#"}
               target="_blank"
               rel="noopener noreferrer"
               className="text-blue-400 hover:text-blue-500"
@@ -159,7 +159,7 @@ const Profile = () => {
               <AiFillTwitterCircle className="text-4xl" />
             </a>
             <a
-              href={user?.social?.facebook || "#"}
+              href={user?.profile?.socialLinks?.facebook || "#"}
               target="_blank"
               rel="noopener noreferrer"
               className="text-blue-700 hover:text-blue-900"
@@ -167,12 +167,12 @@ const Profile = () => {
               <AiFillFacebook className="text-4xl" />
             </a>
             <a
-              href={user?.social?.instagram || "#"}
+              href={user?.profile?.socialLinks?.website || "#"}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-pink-600 hover:text-pink-800"
+              className="text-gray-600 hover:text-gray-800"
             >
-              <AiFillInstagram className="text-4xl" />
+              <AiOutlineGlobal className="text-4xl" />
             </a>
           </div>
 
@@ -199,11 +199,11 @@ const Profile = () => {
                 bio: user?.profile?.bio,
                 college: user?.profile?.college,
                 social: {
-                  linkedin: user?.social?.linkedin,
-                  github: user?.social?.github,
-                  twitter: user?.social?.twitter,
-                  facebook: user?.social?.facebook,
-                  instagram: user?.social?.instagram,
+                  linkedin: user?.profile?.socialLinks?.linkedin,
+                  github: user?.profile?.socialLinks?.github,
+                  twitter: user?.profile?.socialLinks?.Twitter,
+                  facebook: user?.profile?.socialLinks?.facebook,
+                  website: user?.profile?.socialLinks?.website,
                 },
               }}
               onFinish={handleSubmit}
@@ -270,7 +270,7 @@ const Profile = () => {
               <Form.Item label="Facebook" name={["social", "facebook"]}>
                 <Input />
               </Form.Item>
-              <Form.Item label="Instagram" name={["social", "instagram"]}>
+              <Form.Item label="Website" name={["social", "website"]}>
                 <Input />
               </Form.Item>
 
@@ -287,7 +287,6 @@ const Profile = () => {
           </Modal>
         </div>
       </div>
-    </Dashboard>
   );
 };
 
