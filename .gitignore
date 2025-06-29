@@ -3,7 +3,7 @@
 # Environment files
 .env
 .env.local
-.env.production
+backend/.env.production
 docs/
 
 # Node modules
@@ -116,3 +116,4 @@ ENV_TEMPLATE.txt
 ENV_TEMPLATE.env
 RENDER_CONFIG.md
 build.sh
+.env.production
