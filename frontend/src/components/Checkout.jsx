@@ -17,10 +17,19 @@ const loadScript = (src) => {
 
 const handlePayment = async (orderId, onSuccess, onFailure) => {
   try {
+    // Check if Razorpay key is available
+    if (!RAZORPAY_KEY_ID) {
+      console.error("Razorpay key is missing!");
+      message.error("Payment configuration error. Please contact support.");
+      onFailure?.("Missing Razorpay key");
+      return;
+    }
+
     const scriptLoaded = await loadScript("https://checkout.razorpay.com/v1/checkout.js");
     
     if (!scriptLoaded) {
       message.error("Failed to load payment gateway. Please try again.");
+      onFailure?.("Script loading failed");
       return;
     }
 
