@@ -7,7 +7,7 @@ const app = express();
 const corsOptions = {
   origin: [
     'http://localhost:5173', // Local development
-    'https://your-vercel-url.vercel.app', // Your Vercel domain (update after deployment)
+    'https://shailendra-guidely.vercel.app', // Your actual Vercel domain
     'https://guidely.vercel.app' // Alternative domain if you change it
   ],
   credentials: true,
