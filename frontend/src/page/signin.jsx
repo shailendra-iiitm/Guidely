@@ -21,18 +21,29 @@ const SignIn = () => {
 
   // Function to handle form submission
   const onSubmit = handleSubmit(async (data) => {
-    setIsLoading(true);
+    try {
+      setIsLoading(true);
 
-    // Send the login data to the backend API
-    const response = await auth.signin(data);
-    reset();
-    setUser(response.data.user);
-    setToken(response.data.token);
-    // Navigate to dashboard profile after successful login
-    navigate("/dashboard/profile");
-    toast.success("Login successful!");
-
-    setIsLoading(false);
+      // Send the login data to the backend API
+      const response = await auth.signin(data);
+      
+      if (response && response.data && response.data.user && response.data.token) {
+        reset();
+        setUser(response.data.user);
+        setToken(response.data.token);
+        
+        // Navigate to dashboard after successful login
+        navigate("/dashboard");
+        toast.success("Login successful!");
+      } else {
+        throw new Error("Invalid response from server");
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      toast.error(error.response?.data?.message || error.message || "Login failed. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
   });
 
   return (

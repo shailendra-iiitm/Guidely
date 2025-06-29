@@ -272,27 +272,39 @@ const LearnerDashboardHome = () => {
       <Card title="Learning Progress">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <h4 className="font-medium mb-3">Overall Progress</h4>
+            <h4 className="font-medium mb-3">Sessions Completed</h4>
             <Progress 
               type="circle" 
-              percent={75} 
-              format={() => "75%"}
+              percent={stats.totalSessions > 0 ? Math.min((stats.totalSessions / (stats.totalSessions + stats.upcomingSessions)) * 100, 100) : 0} 
+              format={() => `${stats.totalSessions}`}
               size={120}
             />
+            <p className="text-center text-sm text-gray-600 mt-2">
+              {stats.totalSessions} completed sessions
+            </p>
           </div>
           <div>
-            <h4 className="font-medium mb-3">Current Week</h4>
+            <h4 className="font-medium mb-3">Your Learning Journey</h4>
             <div className="space-y-2">
               <div className="flex justify-between">
-                <span>Sessions Completed</span>
-                <span className="font-medium">2/3</span>
+                <span>Skills Learned</span>
+                <span className="font-medium">{stats.skillsLearned}</span>
               </div>
-              <Progress percent={67} size="small" />
               <div className="flex justify-between">
-                <span>Learning Hours</span>
-                <span className="font-medium">4.5/6 hrs</span>
+                <span>Amount Invested</span>
+                <span className="font-medium">₹{stats.totalSpent}</span>
               </div>
-              <Progress percent={75} size="small" />
+              <div className="flex justify-between">
+                <span>Upcoming Sessions</span>
+                <span className="font-medium">{stats.upcomingSessions}</span>
+              </div>
+              {stats.totalSessions > 0 && (
+                <div className="mt-3 p-3 bg-blue-50 rounded-lg">
+                  <p className="text-sm text-blue-800 font-medium">
+                    Great progress! Keep learning to achieve your goals.
+                  </p>
+                </div>
+              )}
             </div>
           </div>
         </div>

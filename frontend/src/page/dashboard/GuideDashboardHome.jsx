@@ -1,20 +1,119 @@
-import React from "react";
-import { Card, Button, Statistic } from "antd";
-import { UserOutlined, CalendarOutlined, DollarOutlined, SettingOutlined } from "@ant-design/icons";
+import React, { useEffect, useState } from "react";
+import { Card, Button, Statistic, message, Alert, Spin } from "antd";
+import { UserOutlined, CalendarOutlined, DollarOutlined, SettingOutlined, ExclamationCircleOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
+import bookingAPI from "../../apiManger/booking";
+import useUserStore from "../../store/user";
 
 const GuideDashboardHome = () => {
   const navigate = useNavigate();
+  const { user } = useUserStore();
+  const [stats, setStats] = useState({
+    totalEarnings: 0,
+    thisMonthEarnings: 0,
+    totalSessions: 0,
+    upcomingSessions: 0,
+    totalLearners: 0,
+    activeServices: 0
+  });
+  const [recentActivity, setRecentActivity] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // Sample data - replace with real API data
-  const stats = {
-    totalEarnings: 15600,
-    thisMonthEarnings: 3200,
-    totalSessions: 45,
-    upcomingSessions: 8,
-    totalLearners: 28,
-    activeServices: 6
-  };
+  useEffect(() => {
+    const fetchGuideStats = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        
+        // Fetch guide bookings to calculate real statistics
+        const bookingsResponse = await bookingAPI.getGuideBookings();
+        const bookings = bookingsResponse?.data?.bookings || [];
+        
+        const now = new Date();
+        const currentMonth = now.getMonth();
+        const currentYear = now.getFullYear();
+        
+        // Calculate statistics from real booking data
+        const completedBookings = bookings.filter(booking => 
+          booking.status === "confirmed" && new Date(booking.dateAndTime) < now
+        );
+        
+        const upcomingBookings = bookings.filter(booking => 
+          booking.status === "confirmed" && new Date(booking.dateAndTime) >= now
+        );
+        
+        const thisMonthBookings = completedBookings.filter(booking => {
+          const bookingDate = new Date(booking.dateAndTime);
+          return bookingDate.getMonth() === currentMonth && bookingDate.getFullYear() === currentYear;
+        });
+        
+        // Calculate earnings
+        const totalEarnings = completedBookings.reduce((sum, booking) => sum + (booking.price || 0), 0);
+        const thisMonthEarnings = thisMonthBookings.reduce((sum, booking) => sum + (booking.price || 0), 0);
+        
+        // Get unique learners
+        const uniqueLearners = new Set();
+        completedBookings.forEach(booking => {
+          if (booking.user?._id) {
+            uniqueLearners.add(booking.user._id);
+          }
+        });
+        
+        // Get unique services
+        const uniqueServices = new Set();
+        bookings.forEach(booking => {
+          if (booking.service?._id) {
+            uniqueServices.add(booking.service._id);
+          }
+        });
+        
+        setStats({
+          totalEarnings: totalEarnings,
+          thisMonthEarnings: thisMonthEarnings,
+          totalSessions: completedBookings.length,
+          upcomingSessions: upcomingBookings.length,
+          totalLearners: uniqueLearners.size,
+          activeServices: uniqueServices.size
+        });
+        
+        // Get recent activity (last 5 bookings)
+        const recentBookings = bookings
+          .sort((a, b) => new Date(b.createdAt || b.dateAndTime) - new Date(a.createdAt || a.dateAndTime))
+          .slice(0, 3)
+          .map(booking => ({
+            id: booking._id,
+            type: booking.status === 'confirmed' && new Date(booking.dateAndTime) < now ? 'completed' : 
+                  booking.status === 'confirmed' ? 'upcoming' : 'new',
+            title: booking.service?.name || 'Learning Session',
+            learner: booking.user?.name || 'Learner',
+            amount: booking.price || 0,
+            time: new Date(booking.createdAt || booking.dateAndTime).toLocaleString()
+          }));
+        
+        setRecentActivity(recentBookings);
+        
+      } catch (error) {
+        console.error("Error fetching guide stats:", error);
+        setError("Failed to load dashboard statistics");
+        message.error("Failed to load dashboard data");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchGuideStats();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="p-6">
+        <div className="flex justify-center items-center h-64">
+          <Spin size="large" />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="p-6 space-y-6">
@@ -23,6 +122,19 @@ const GuideDashboardHome = () => {
         <h1 className="text-2xl font-bold mb-2">Welcome Back, Guide! 👨‍🏫</h1>
         <p className="text-green-100">Help learners achieve their goals and grow your expertise.</p>
       </div>
+
+      {/* Error Alert */}
+      {error && (
+        <Alert
+          message="Error Loading Dashboard Data"
+          description={error}
+          type="error"
+          icon={<ExclamationCircleOutlined />}
+          showIcon
+          closable
+          onClose={() => setError(null)}
+        />
+      )}
 
       {/* Quick Stats */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -72,11 +184,18 @@ const GuideDashboardHome = () => {
             </div>
             <div className="flex justify-between items-center">
               <span>Average Rating</span>
-              <span className="font-bold text-lg">4.8 ⭐</span>
+              <span className="font-bold text-lg">
+                {user?.averageRating 
+                  ? `${user.averageRating.toFixed(1)} ⭐` 
+                  : "No ratings yet"
+                }
+              </span>
             </div>
             <div className="flex justify-between items-center">
               <span>Response Rate</span>
-              <span className="font-bold text-lg">95%</span>
+              <span className="font-bold text-lg">
+                {user?.responseRate ? `${user.responseRate}%` : "No data"}
+              </span>
             </div>
           </div>
         </Card>
@@ -127,18 +246,32 @@ const GuideDashboardHome = () => {
         {/* Recent Activity */}
         <Card title="Recent Activity">
           <div className="space-y-3">
-            <div className="border-l-4 border-blue-500 pl-3">
-              <p className="font-medium">New booking received</p>
-              <p className="text-sm text-gray-600">React Advanced Patterns - 2 hours ago</p>
-            </div>
-            <div className="border-l-4 border-green-500 pl-3">
-              <p className="font-medium">Free session completed</p>
-              <p className="text-sm text-gray-600">JavaScript Fundamentals - 5 hours ago</p>
-            </div>
-            <div className="border-l-4 border-purple-500 pl-3">
-              <p className="font-medium">Payment received</p>
-              <p className="text-sm text-gray-600">₹120 for Node.js session - 1 day ago</p>
-            </div>
+            {recentActivity.length > 0 ? (
+              recentActivity.map((activity) => (
+                <div 
+                  key={activity.id} 
+                  className={`border-l-4 pl-3 ${
+                    activity.type === 'completed' ? 'border-green-500' :
+                    activity.type === 'upcoming' ? 'border-blue-500' : 'border-purple-500'
+                  }`}
+                >
+                  <p className="font-medium">
+                    {activity.type === 'completed' ? 'Session completed' :
+                     activity.type === 'upcoming' ? 'Upcoming session' : 'New booking received'}
+                  </p>
+                  <p className="text-sm text-gray-600">
+                    {activity.title} with {activity.learner}
+                    {activity.amount > 0 && ` - ₹${activity.amount}`}
+                  </p>
+                  <p className="text-xs text-gray-500">{activity.time}</p>
+                </div>
+              ))
+            ) : (
+              <div className="text-center text-gray-500 py-4">
+                <p>No recent activity</p>
+                <p className="text-sm">Your recent bookings will appear here</p>
+              </div>
+            )}
           </div>
         </Card>
       </div>
