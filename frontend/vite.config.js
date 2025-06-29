@@ -7,6 +7,16 @@ export default defineConfig({
     port: 5173,          // optional: set your dev port
     open: true,          // optional: auto open in browser
   },
+  build: {
+    outDir: 'dist',
+    assetsDir: 'assets',
+    sourcemap: false,
+    rollupOptions: {
+      output: {
+        manualChunks: undefined,
+      },
+    },
+  },
   resolve: {
     alias: {
       '@': '/src',       // optional: use @ as alias for /src

@@ -101,3 +101,15 @@ out/
 # Temporary files
 tmp/
 temp/
+
+# Vercel
+# Vercel
+.vercel
+
+# Local documentation and setup files (keep local only)
+VERCEL_DEPLOYMENT.md
+setup-vercel.sh
+setup-vercel.bat
+DEPLOYMENT_NOTES.md
+LOCAL_SETUP.md
+ENV_TEMPLATE.txt

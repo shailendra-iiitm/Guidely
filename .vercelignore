@@ -1,0 +1,12 @@
+# Files to ignore during Vercel deployment
+VERCEL_DEPLOYMENT.md
+setup-vercel.sh
+setup-vercel.bat
+DEPLOYMENT_NOTES.md
+LOCAL_SETUP.md
+docs/
+pqrst/
+*.md
+!README.md
+.git/
+.gitignore
