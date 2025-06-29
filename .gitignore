@@ -113,3 +113,6 @@ setup-vercel.bat
 DEPLOYMENT_NOTES.md
 LOCAL_SETUP.md
 ENV_TEMPLATE.txt
+ENV_TEMPLATE.env
+RENDER_CONFIG.md
+build.sh
