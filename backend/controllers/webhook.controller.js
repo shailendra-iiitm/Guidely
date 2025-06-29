@@ -1,12 +1,4 @@
 const razorpay = require("razorpay");
-const config = require("../config");
-const httpStatus = require("../util/httpStatus");
-const bookingService = require("../services/booking.service");
-const zoomService = require("../services/zoom.service");
-const emailService = require("../services/email.service");
-const moment = require("moment");
-
-const razorpay = require("razorpay");
 const crypto = require("crypto");
 const config = require("../config");
 const httpStatus = require("../util/httpStatus");
