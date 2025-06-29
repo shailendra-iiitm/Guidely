@@ -44,11 +44,17 @@ const categorizeBookings = (bookings) => {
     }
     // If booking date has passed (more than 1 hour ago) and not completed/cancelled
     else if (hoursDiff < -1) {
-      // Treat past bookings as completed if they were confirmed, or as cancelled if pending
+      // Only treat past bookings as completed if they were confirmed
       if (booking.status === 'confirmed' || booking.status === 'upcoming') {
         categorized.completed.push(booking);
-      } else {
-        categorized.cancelled.push(booking); // pending bookings that passed
+      } 
+      // Keep pending bookings as pending even if time has passed (payment might still be processing)
+      else if (booking.status === 'pending') {
+        categorized.pending.push(booking);
+      }
+      // Only mark as cancelled if explicitly cancelled or no-show
+      else {
+        categorized.cancelled.push(booking);
       }
     }
     // If booking is within next 24 hours (upcoming)

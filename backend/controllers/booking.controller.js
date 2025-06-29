@@ -50,6 +50,23 @@ const initiateBookingAndPayment = async (req, res, next) => {
       });
     }
 
+    // Check for duplicate bookings (same user, service, and time)
+    const existingBooking = await BookingModel.findOne({
+      user: req.user._id,
+      service: serviceId,
+      dateAndTime: bookingDate,
+      status: { $in: ['pending', 'confirmed', 'upcoming'] } // Don't check cancelled bookings
+    });
+
+    if (existingBooking) {
+      console.log("Duplicate booking found:", existingBooking._id);
+      return res.status(httpStatus.badRequest).json({
+        success: false,
+        message: "You already have a booking for this service at this time",
+        existingBooking: existingBooking._id
+      });
+    }
+
     // Create a new booking
     const bookingData = {
       user: req.user._id,
