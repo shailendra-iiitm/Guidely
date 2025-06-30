@@ -12,6 +12,16 @@ import { NavLink } from "react-router-dom";
 
 const Home = () => {
   const [isOpen, setIsOpen] = useState({});
+  const [showSupport, setShowSupport] = useState(false);
+  const [showFeedbackManager, setShowFeedbackManager] = useState(false);
+  const [feedbackSubmissions, setFeedbackSubmissions] = useState([]);
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    type: '',
+    subject: '',
+    message: ''
+  });
 
   const toggleFAQ = (index) => {
     setIsOpen((prevState) => ({
@@ -20,16 +30,101 @@ const Home = () => {
     }));
   };
 
+  const toggleSupport = () => {
+    setShowSupport(!showSupport);
+    if (!showSupport) {
+      const supportSection = document.getElementById('support-section');
+      supportSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  const handleInputChange = (e) => {
+    const { id, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [id]: value
+    }));
+  };
+
+  const handleSubmitFeedback = (e) => {
+    e.preventDefault();
+    
+    // Validate form
+    if (!formData.name || !formData.email || !formData.type || !formData.subject || !formData.message) {
+      alert('Please fill in all fields');
+      return;
+    }
+
+    // Create new feedback submission
+    const newSubmission = {
+      id: Date.now(),
+      ...formData,
+      timestamp: new Date().toLocaleString(),
+      status: 'pending'
+    };
+
+    // Add to submissions
+    setFeedbackSubmissions(prev => [...prev, newSubmission]);
+
+    // Clear form
+    setFormData({
+      name: '',
+      email: '',
+      type: '',
+      subject: '',
+      message: ''
+    });
+
+    // Show success message
+    alert('Thank you for your feedback! We will review it and get back to you soon.');
+    
+    // Close support form
+    setShowSupport(false);
+  };
+
+  const updateFeedbackStatus = (id, newStatus) => {
+    setFeedbackSubmissions(prev => 
+      prev.map(submission => 
+        submission.id === id 
+          ? { ...submission, status: newStatus }
+          : submission
+      )
+    );
+  };
+
+  const deleteFeedback = (id) => {
+    setFeedbackSubmissions(prev => prev.filter(submission => submission.id !== id));
+  };
+
+  const getCategorizedFeedbacks = () => {
+    return {
+      suggestion: feedbackSubmissions.filter(f => f.type === 'suggestion'),
+      complaint: feedbackSubmissions.filter(f => f.type === 'complaint'),
+      'bug-report': feedbackSubmissions.filter(f => f.type === 'bug-report'),
+      'feature-request': feedbackSubmissions.filter(f => f.type === 'feature-request'),
+      general: feedbackSubmissions.filter(f => f.type === 'general')
+    };
+  };
+
   return (
     <>
       <Nav />
-      <div className="bg-white">
-        <section className="relative text-center bg-black">
-          <img className="w-14 hidden md:block absolute top-10 left-[15%]" src={star} alt="" />
-          <img className="w-14 absolute md:block hidden top-[20%] left-48" src={graduated} alt="" />
-          <img className="w-20 absolute md:block hidden top-16 right-[15%]" src={diamond} alt="" />
+      <div className="bg-gray-50">
+        <section className="relative text-center bg-gradient-to-br from-gray-900 via-black to-gray-800 overflow-hidden">
+          {/* Inverted U Layout - Left side going up */}
+          <img className="w-14 hidden md:block absolute bottom-40 left-[6%] animate-bounce" src={star} alt="" />
+          <img className="w-14 hidden md:block absolute top-1/2 left-[8%] animate-pulse" src={graduated} alt="" />
+          <img className="w-14 hidden md:block absolute top-32 left-[12%] animate-bounce" src={computerchip} alt="" />
+          
+          {/* Top center of the U */}
+          <img className="w-16 hidden md:block absolute top-8 left-1/2 transform -translate-x-1/2 animate-pulse" src={diamond} alt="" />
+          
+          {/* Right side going down */}
+          <img className="w-14 hidden md:block absolute top-32 right-[12%] animate-pulse" src={trophy} alt="" />
+          <img className="w-14 hidden md:block absolute top-1/2 right-[8%] animate-bounce" src={coding} alt="" />
+          <img className="w-14 hidden md:block absolute bottom-40 right-[6%] animate-pulse" src={star} alt="" />
 
-          <div className="relative py-10 md:py-20 ">
+          <div className="relative py-10 md:py-20 z-10">
             <h1 className="mb-4 text-2xl font-bold text-white md:text-6xl">
               Welcome to{" "}
               <span className="text-3xl border-b-8 md:text-7xl">Guidely</span>
@@ -42,11 +137,8 @@ const Home = () => {
                 Find Your Guide
               </button>
             </NavLink>
-            <img className="absolute hidden md:block w-14 left-1/3" src={computerchip} alt="" />
           </div>
           <div className="relative">
-            <img className="absolute hidden md:block w-14 top-56 left-28" src={coding} alt="" />
-            <img className="absolute hidden md:block w-14 top-3 right-28" src={trophy} alt="" />
             <video
               autoPlay
               loop
@@ -55,12 +147,11 @@ const Home = () => {
             >
               <source src={heroVideo} type="video/mp4" />
             </video>
-            <img className="absolute hidden md:block w-14 bottom-96 right-28 " src={star} alt="" />
           </div>
         </section>
 
                {/* About Section */}
-        <section className="bg-[#F5EEE9]">
+        <section className="bg-gradient-to-r from-blue-50 to-purple-50">
           <div className="px-4 py-16 mx-auto sm:max-w-xl md:max-w-full lg:max-w-screen-xl md:px-24 lg:px-8 lg:py-20">
             <div className="flex flex-col max-w-screen-xl overflow-hidden bg-white border rounded shadow-sm lg:flex-row sm:mx-auto">
               <div className="relative lg:w-1/2">
@@ -89,12 +180,14 @@ const Home = () => {
                   get career advice, we have the right Guide for you.
                 </p>
                 <div className="flex items-center">
-                  <button
-                    type="submit"
-                    className="inline-flex items-center justify-center h-12 px-6 mr-6 font-medium tracking-wide text-white transition duration-200 bg-purple-600 rounded shadow-md hover:bg-deep-purple-accent-700 focus:shadow-outline focus:outline-none"
-                  >
-                    Get started
-                  </button>
+                  <NavLink to="/signup/learner">
+                    <button
+                      type="submit"
+                      className="inline-flex items-center justify-center h-12 px-6 mr-6 font-medium tracking-wide text-white transition duration-200 bg-purple-600 rounded shadow-md hover:bg-deep-purple-accent-700 focus:shadow-outline focus:outline-none"
+                    >
+                      Get started
+                    </button>
+                  </NavLink>
                   <a
                     href="/"
                     aria-label=""
@@ -116,7 +209,7 @@ const Home = () => {
         </section>
 
        {/* Features Section */}
-        <section className="px-8 py-20 bg-white">
+        <section className="px-8 py-20 bg-gradient-to-b from-white to-gray-100">
           <div className="px-4 py-16 mx-auto sm:max-w-xl md:max-w-full lg:max-w-screen-xl md:px-24 lg:px-8 lg:py-20">
             <div className="max-w-xl mb-10 md:mx-auto sm:text-center lg:max-w-2xl md:mb-12">
               <h2 className="max-w-lg mb-6 font-sans text-3xl font-bold leading-none tracking-tight text-gray-900 sm:text-4xl md:mx-auto">
@@ -336,7 +429,7 @@ const Home = () => {
         </section>
 
          {/* How It Works Section */}
-        <section className="px-8 py-20 text-center bg-gray-50">
+        <section className="px-8 py-20 text-center bg-gradient-to-r from-gray-100 to-blue-50">
           <div className="px-4 py-16 mx-auto sm:max-w-xl md:max-w-full lg:max-w-screen-xl md:px-24 lg:px-8 lg:py-20">
             <div className="max-w-xl mb-10 md:mx-auto sm:text-center lg:max-w-2xl md:mb-12">
               <h2 className="max-w-lg mb-6 font-sans text-3xl font-bold leading-none tracking-tight text-gray-900 sm:text-4xl md:mx-auto">
@@ -600,7 +693,7 @@ const Home = () => {
         </section>
 
         {/* Guide Categories Section */}
-        <section className="px-8 py-20 bg-white">
+        <section className="px-8 py-20 bg-gradient-to-b from-white to-purple-50">
           <div>
             <div className="flex flex-col px-4 py-16 mx-auto sm:max-w-xl md:max-w-full lg:max-w-screen-xl md:px-24 lg:px-8 lg:py-20 lg:flex-row">
               <div className="mb-5 lg:w-1/3 lg:mb-0 lg:mr-20">
@@ -793,7 +886,7 @@ const Home = () => {
 
 
          {/* Pricing Section */}
-        <section className="px-8 py-20 text-center bg-white">
+        <section className="px-8 py-20 text-center bg-gradient-to-r from-purple-50 to-blue-50">
           <h2 className="mb-12 text-4xl font-bold">Affordable Pricing</h2>
           <p className="max-w-4xl mx-auto mb-6 text-xl text-gray-700">
             We offer affordable plans for both learners and Guides. Get started
@@ -806,7 +899,7 @@ const Home = () => {
         </section>
 
         {/* FAQs Section */}
-        <section className="px-6 py-16 bg-white">
+        <section className="px-6 py-16 bg-gradient-to-b from-white to-gray-50">
           <div className="max-w-screen-lg mx-auto">
             <h2 className="mb-10 text-4xl font-bold text-center text-gray-900">
               Frequently Asked Questions
@@ -1034,8 +1127,262 @@ const Home = () => {
           </div>
         </section>
 
+        {/* Support Section */}
+        {showSupport && (
+          <section id="support-section" className="px-8 py-20 bg-gradient-to-r from-indigo-50 to-purple-50">
+            <div className="max-w-4xl mx-auto">
+              <div className="text-center mb-12">
+                <h2 className="mb-6 text-4xl font-bold text-gray-900">Need Support?</h2>
+                <p className="text-xl text-gray-700 mb-8">
+                  We're here to help! Share your feedback, suggestions, or report any issues you're experiencing.
+                </p>
+                <button
+                  onClick={() => setShowSupport(false)}
+                  className="mb-4 px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition duration-200"
+                >
+                  Close Support
+                </button>
+                <button
+                  onClick={() => setShowFeedbackManager(!showFeedbackManager)}
+                  className="mb-4 ml-4 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition duration-200"
+                >
+                  {showFeedbackManager ? 'Hide' : 'View'} Feedback Manager ({feedbackSubmissions.length})
+                </button>
+              </div>
+            
+            <div className="bg-white rounded-lg shadow-lg p-8">
+              <form className="space-y-6" onSubmit={handleSubmitFeedback}>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
+                      Your Name
+                    </label>
+                    <input
+                      type="text"
+                      id="name"
+                      value={formData.name}
+                      onChange={handleInputChange}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                      placeholder="Enter your name"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                      Email Address
+                    </label>
+                    <input
+                      type="email"
+                      id="email"
+                      value={formData.email}
+                      onChange={handleInputChange}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                      placeholder="Enter your email"
+                      required
+                    />
+                  </div>
+                </div>
+                
+                <div>
+                  <label htmlFor="type" className="block text-sm font-medium text-gray-700 mb-2">
+                    Type of Feedback
+                  </label>
+                  <select
+                    id="type"
+                    value={formData.type}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    required
+                  >
+                    <option value="">Select feedback type</option>
+                    <option value="suggestion">Suggestion</option>
+                    <option value="complaint">Complaint</option>
+                    <option value="bug-report">Bug Report</option>
+                    <option value="feature-request">Feature Request</option>
+                    <option value="general">General Inquiry</option>
+                  </select>
+                </div>
+                
+                <div>
+                  <label htmlFor="subject" className="block text-sm font-medium text-gray-700 mb-2">
+                    Subject
+                  </label>
+                  <input
+                    type="text"
+                    id="subject"
+                    value={formData.subject}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    placeholder="Brief description of your feedback"
+                    required
+                  />
+                </div>
+                
+                <div>
+                  <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-2">
+                    Message
+                  </label>
+                  <textarea
+                    id="message"
+                    rows="6"
+                    value={formData.message}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    placeholder="Please provide detailed information about your feedback, complaint, or suggestion..."
+                    required
+                  ></textarea>
+                </div>
+                
+                <div className="text-center">
+                  <button
+                    type="submit"
+                    className="px-8 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-semibold rounded-lg hover:from-purple-700 hover:to-blue-700 transition duration-300 transform hover:scale-105"
+                  >
+                    Submit Feedback
+                  </button>
+                </div>
+              </form>
+              
+              <div className="mt-8 p-4 bg-blue-50 rounded-lg">
+                <div className="flex items-center">
+                  <svg className="w-6 h-6 text-blue-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                  </svg>
+                  <div>
+                    <p className="text-sm text-blue-800">
+                      <strong>Direct Contact:</strong> You can also reach us directly at{" "}
+                      <a href="mailto:guidely.iiit@gmail.com" className="text-blue-600 hover:text-blue-500 underline">
+                        guidely.iiit@gmail.com
+                      </a>
+                    </p>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Feedback Management Interface */}
+              {showFeedbackManager && (
+                <div className="mt-8 bg-gray-50 rounded-lg p-6">
+                  <h3 className="text-2xl font-bold text-gray-900 mb-6">Feedback Management System</h3>
+                  
+                  {feedbackSubmissions.length === 0 ? (
+                    <p className="text-gray-600 text-center py-8">No feedback submissions yet.</p>
+                  ) : (
+                    <div className="space-y-6">
+                      {Object.entries(getCategorizedFeedbacks()).map(([category, feedbacks]) => (
+                        feedbacks.length > 0 && (
+                          <div key={category} className="bg-white rounded-lg p-4 shadow-sm">
+                            <h4 className="text-lg font-semibold text-gray-800 mb-4 capitalize flex items-center">
+                              <span className={`w-3 h-3 rounded-full mr-2 ${
+                                category === 'complaint' ? 'bg-red-500' :
+                                category === 'bug-report' ? 'bg-orange-500' :
+                                category === 'suggestion' ? 'bg-green-500' :
+                                category === 'feature-request' ? 'bg-blue-500' :
+                                'bg-gray-500'
+                              }`}></span>
+                              {category.replace('-', ' ')} ({feedbacks.length})
+                            </h4>
+                            
+                            <div className="space-y-3">
+                              {feedbacks.map((feedback) => (
+                                <div key={feedback.id} className="border border-gray-200 rounded-lg p-4">
+                                  <div className="flex justify-between items-start mb-2">
+                                    <div className="flex-1">
+                                      <h5 className="font-medium text-gray-900">{feedback.subject}</h5>
+                                      <p className="text-sm text-gray-600">
+                                        From: {feedback.name} ({feedback.email}) | {feedback.timestamp}
+                                      </p>
+                                    </div>
+                                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                      feedback.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
+                                      feedback.status === 'in-progress' ? 'bg-blue-100 text-blue-800' :
+                                      feedback.status === 'resolved' ? 'bg-green-100 text-green-800' :
+                                      'bg-gray-100 text-gray-800'
+                                    }`}>
+                                      {feedback.status}
+                                    </span>
+                                  </div>
+                                  
+                                  <p className="text-gray-700 mb-3">{feedback.message}</p>
+                                  
+                                  <div className="flex flex-wrap gap-2">
+                                    <button
+                                      onClick={() => updateFeedbackStatus(feedback.id, 'in-progress')}
+                                      className="px-3 py-1 bg-blue-500 text-white text-xs rounded hover:bg-blue-600 transition"
+                                      disabled={feedback.status === 'in-progress'}
+                                    >
+                                      Mark In Progress
+                                    </button>
+                                    <button
+                                      onClick={() => updateFeedbackStatus(feedback.id, 'resolved')}
+                                      className="px-3 py-1 bg-green-500 text-white text-xs rounded hover:bg-green-600 transition"
+                                      disabled={feedback.status === 'resolved'}
+                                    >
+                                      Mark Resolved
+                                    </button>
+                                    <button
+                                      onClick={() => updateFeedbackStatus(feedback.id, 'pending')}
+                                      className="px-3 py-1 bg-yellow-500 text-white text-xs rounded hover:bg-yellow-600 transition"
+                                    >
+                                      Reset to Pending
+                                    </button>
+                                    <button
+                                      onClick={() => {
+                                        if (window.confirm('Are you sure you want to delete this feedback?')) {
+                                          deleteFeedback(feedback.id);
+                                        }
+                                      }}
+                                      className="px-3 py-1 bg-red-500 text-white text-xs rounded hover:bg-red-600 transition"
+                                    >
+                                      Delete
+                                    </button>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )
+                      ))}
+                      
+                      {/* Summary Statistics */}
+                      <div className="bg-white rounded-lg p-4 shadow-sm">
+                        <h4 className="text-lg font-semibold text-gray-800 mb-4">Summary Statistics</h4>
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                          <div className="text-center">
+                            <div className="text-2xl font-bold text-blue-600">
+                              {feedbackSubmissions.length}
+                            </div>
+                            <div className="text-sm text-gray-600">Total Submissions</div>
+                          </div>
+                          <div className="text-center">
+                            <div className="text-2xl font-bold text-yellow-600">
+                              {feedbackSubmissions.filter(f => f.status === 'pending').length}
+                            </div>
+                            <div className="text-sm text-gray-600">Pending</div>
+                          </div>
+                          <div className="text-center">
+                            <div className="text-2xl font-bold text-blue-600">
+                              {feedbackSubmissions.filter(f => f.status === 'in-progress').length}
+                            </div>
+                            <div className="text-sm text-gray-600">In Progress</div>
+                          </div>
+                          <div className="text-center">
+                            <div className="text-2xl font-bold text-green-600">
+                              {feedbackSubmissions.filter(f => f.status === 'resolved').length}
+                            </div>
+                            <div className="text-sm text-gray-600">Resolved</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>            </div>
+          </section>
+        )}
+
            {/* Campaign & Call to Guidely */}
-        <section className="px-8 py-20 text-center text-white bg-purple-600">
+        <section className="px-8 py-20 text-center text-white bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-600">
           <h2 className="mb-6 text-4xl font-bold">
             Ready to Find Your Guide?
           </h2>
@@ -1043,13 +1390,15 @@ const Home = () => {
             Join Guidely today and connect with experienced professionals who
             can guide you through your journey!
           </p>
-          <button className="px-8 py-3 font-semibold text-purple-600 transition bg-white rounded-lg hover:bg-gray-200">
-            Get Started Now
-          </button>
+          <NavLink to="/signup/learner">
+            <button className="px-8 py-3 font-semibold text-purple-600 transition bg-white rounded-lg hover:bg-gray-200">
+              Get Started Now
+            </button>
+          </NavLink>
         </section>
 
         {/* Footer */}
-        <footer className="px-8 py-10 text-white bg-gray-900">
+        <footer className="px-8 py-10 text-white bg-gradient-to-r from-gray-900 to-gray-800">
           <div className="max-w-6xl mx-auto text-center">
             <p>Follow us on social media for updates and tips!</p>
             <p className="mt-4">
@@ -1065,9 +1414,23 @@ const Home = () => {
                 LinkedIn
               </a>
             </p>
+            <p className="mt-4 text-gray-300">
+              Contact us: <a href="mailto:guidely.iiit@gmail.com" className="text-blue-400 hover:text-blue-300">guidely.iiit@gmail.com</a>
+            </p>
             <p className="mt-4">© 2024 Guidely. All Rights Reserved.</p>
           </div>
         </footer>
+
+        {/* Floating Support Button */}
+        <button
+          onClick={toggleSupport}
+          className="fixed bottom-6 right-6 bg-gradient-to-r from-purple-600 to-blue-600 text-white p-4 rounded-full shadow-lg hover:from-purple-700 hover:to-blue-700 transition duration-300 transform hover:scale-110 z-50"
+          aria-label="Contact Support"
+        >
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+          </svg>
+        </button>
       </div>
 </>);
 };

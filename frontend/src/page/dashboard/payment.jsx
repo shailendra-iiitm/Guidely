@@ -27,12 +27,28 @@ const Payment = () => {
         paymentAPI.getPaymentStats()
       ]);
       
-      setPaymentHistory(historyResponse.data.data || []);
-      setPaymentStats(statsResponse.data.data || {});
+      console.log("Payment history response:", historyResponse.data);
+      console.log("Payment stats response:", statsResponse.data);
+      
+      const payments = historyResponse.data.data?.payments || [];
+      const stats = statsResponse.data.data || {};
+      
+      setPaymentHistory(payments);
+      setPaymentStats(stats);
+      
+      // Log payment data for debugging
+      console.log("Loaded payment history:", payments.length, "payments");
+      if (payments.length > 0) {
+        console.log("Sample payment:", payments[0]);
+      }
+      
     } catch (error) {
       console.error("Error fetching payment data:", error);
-      setError("Failed to load payment data. Please try again.");
-      message.error("Failed to load payment data");
+      console.error("Error response:", error.response?.data);
+      
+      const errorMessage = error.response?.data?.message || "Failed to load payment data. Please try again.";
+      setError(errorMessage);
+      message.error(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -48,37 +64,53 @@ const Payment = () => {
       title: "Learner Name",
       dataIndex: "learnerName",
       key: "learnerName",
-      render: (_, record) => record.booking?.learner?.name || "Unknown Learner",
+      render: (_, record) => record.user?.name || "Unknown Learner",
     },
     {
       title: "Service",
       dataIndex: "serviceName",
       key: "serviceName",
-      render: (_, record) => record.booking?.service?.title || "Unknown Service",
+      render: (_, record) => record.service?.name || record.service?.title || "Unknown Service",
+    },
+    {
+      title: "Session Date",
+      dataIndex: "sessionDate",
+      key: "sessionDate",
+      render: (_, record) => {
+        const sessionDate = record.booking?.dateAndTime;
+        return sessionDate ? new Date(sessionDate).toLocaleDateString() : "N/A";
+      },
     },
     {
       title: "Transaction ID",
       dataIndex: "transactionId",
       key: "transactionId",
+      render: (transactionId) => transactionId || "N/A",
     },
     {
-      title: "Date",
+      title: "Payment Date",
       dataIndex: "createdAt",
       key: "createdAt",
       render: (date) => new Date(date).toLocaleDateString(),
     },
     {
-      title: "Amount",
-      dataIndex: "amount",
-      key: "amount",
-      render: (amount) => `₹${amount}`,
+      title: "Earning",
+      dataIndex: "guideEarning",
+      key: "guideEarning",
+      render: (earning) => `₹${earning || 0}`,
     },
     {
       title: "Status",
       dataIndex: "status",
       key: "status",
       render: (status) => (
-        <span className={status === "completed" || status === "free" ? "text-green-500" : status === "pending" ? "text-yellow-500" : "text-red-500"}>
+        <span className={
+          status === "completed" || status === "free" 
+            ? "text-green-500" 
+            : status === "pending" 
+              ? "text-yellow-500" 
+              : "text-red-500"
+        }>
           {status === "free" ? "Free Session" : status.charAt(0).toUpperCase() + status.slice(1)}
         </span>
       ),
@@ -95,21 +127,31 @@ const Payment = () => {
       title: "Guide Name",
       dataIndex: "guideName",
       key: "guideName",
-      render: (_, record) => record.booking?.guide?.name || "Unknown Guide",
+      render: (_, record) => record.guide?.name || "Unknown Guide",
     },
     {
       title: "Service",
       dataIndex: "serviceName",
       key: "serviceName",
-      render: (_, record) => record.booking?.service?.title || "Unknown Service",
+      render: (_, record) => record.service?.name || record.service?.title || "Unknown Service",
+    },
+    {
+      title: "Session Date",
+      dataIndex: "sessionDate",
+      key: "sessionDate",
+      render: (_, record) => {
+        const sessionDate = record.booking?.dateAndTime;
+        return sessionDate ? new Date(sessionDate).toLocaleDateString() : "N/A";
+      },
     },
     {
       title: "Transaction ID",
       dataIndex: "transactionId",
       key: "transactionId",
+      render: (transactionId) => transactionId || "N/A",
     },
     {
-      title: "Date",
+      title: "Payment Date",
       dataIndex: "createdAt",
       key: "createdAt",
       render: (date) => new Date(date).toLocaleDateString(),
@@ -125,7 +167,13 @@ const Payment = () => {
       dataIndex: "status",
       key: "status",
       render: (status) => (
-        <span className={status === "completed" || status === "free" ? "text-green-500" : status === "pending" ? "text-yellow-500" : "text-red-500"}>
+        <span className={
+          status === "completed" || status === "free" 
+            ? "text-green-500" 
+            : status === "pending" 
+              ? "text-yellow-500" 
+              : "text-red-500"
+        }>
           {status === "free" ? "Free Session" : status.charAt(0).toUpperCase() + status.slice(1)}
         </span>
       ),

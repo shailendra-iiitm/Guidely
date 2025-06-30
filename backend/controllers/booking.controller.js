@@ -50,12 +50,12 @@ const initiateBookingAndPayment = async (req, res, next) => {
       });
     }
 
-    // Check for duplicate bookings (same user, service, and time)
+    // Check for duplicate bookings (same user, service, and time) - Enhanced check
     const existingBooking = await BookingModel.findOne({
       user: req.user._id,
       service: serviceId,
       dateAndTime: bookingDate,
-      status: { $in: ['pending', 'confirmed', 'upcoming'] } // Don't check cancelled bookings
+      status: { $in: ['pending', 'confirmed', 'upcoming', 'in-progress'] } // Include in-progress
     });
 
     if (existingBooking) {
@@ -64,6 +64,22 @@ const initiateBookingAndPayment = async (req, res, next) => {
         success: false,
         message: "You already have a booking for this service at this time",
         existingBooking: existingBooking._id
+      });
+    }
+
+    // Additional check: Prevent multiple pending bookings for same user within short time window
+    const recentPendingBookings = await BookingModel.find({
+      user: req.user._id,
+      status: 'pending',
+      createdAt: { $gte: new Date(Date.now() - 5 * 60 * 1000) } // Within last 5 minutes
+    });
+
+    if (recentPendingBookings.length > 0) {
+      console.log("Recent pending booking found, preventing duplicate:", recentPendingBookings[0]._id);
+      return res.status(httpStatus.badRequest).json({
+        success: false,
+        message: "You have a recent pending booking. Please wait for it to be processed or contact support.",
+        existingBooking: recentPendingBookings[0]._id
       });
     }
 
@@ -107,9 +123,22 @@ const initiateBookingAndPayment = async (req, res, next) => {
       console.log("Creating payment record:", paymentData);
       const payment = await paymentService.createPaymentRecord(paymentData);
       console.log("Payment record created:", payment._id);
+      
+      // Update booking with payment reference
+      await BookingModel.findByIdAndUpdate(newBooking._id, { 
+        payment: payment._id 
+      });
     } catch (paymentError) {
       console.error("Error creating payment record:", paymentError);
-      // Don't fail the booking if payment record creation fails
+      // Rollback booking creation if payment record fails for paid sessions
+      if (service.price > 0) {
+        await BookingModel.findByIdAndDelete(newBooking._id);
+        return res.status(httpStatus.internalServerError).json({
+          success: false,
+          message: "Failed to create payment record. Please try again."
+        });
+      }
+      // For free sessions, continue even if payment record creation fails
     }
 
     // Check if it's a free session (more robust check)
@@ -304,6 +333,39 @@ const markSessionComplete = async (req, res, next) => {
         success: false,
         message: "Booking not found or you're not authorized to update it"
       });
+    }
+
+    // Update payment status to completed when session is marked complete
+    try {
+      const paymentService = require("../services/payment.service");
+      const payment = await paymentService.getPaymentByBookingId(bookingId);
+      
+      if (payment && payment.status !== 'completed' && payment.status !== 'free') {
+        await paymentService.updatePaymentStatus(payment._id, 'completed', {
+          paidAt: new Date()
+        });
+        console.log(`Updated payment ${payment._id} status to completed`);
+      } else if (!payment) {
+        // Create payment record if it doesn't exist (for legacy bookings)
+        const paymentData = {
+          booking: booking._id,
+          user: booking.user._id,
+          guide: booking.guide._id,
+          service: booking.service._id,
+          amount: booking.price || 0,
+          currency: "INR",
+          status: "completed",
+          paymentMethod: (booking.price === 0) ? "free" : "razorpay",
+          transactionId: (booking.price === 0) ? `FREE_${booking._id}` : `RETRO_${booking._id}`,
+          paidAt: new Date()
+        };
+        
+        await paymentService.createPaymentRecord(paymentData);
+        console.log(`Created retroactive payment record for completed booking ${booking._id}`);
+      }
+    } catch (paymentError) {
+      console.error("Error updating payment status:", paymentError);
+      // Don't fail the session completion if payment update fails
     }
 
     // Add achievements to learner's profile

@@ -24,10 +24,65 @@ const getPaymentHistory = async (req, res, next) => {
 
     const payments = await PaymentModel.find(query)
       .populate('booking', 'dateAndTime status')
-      .populate('service', 'name description')
+      .populate('service', 'name description title')
       .populate('user', 'name email')
       .populate('guide', 'name email')
       .sort({ createdAt: -1 });
+
+    // If learner has no payment records but has completed bookings, 
+    // check for orphaned completed bookings without payment records
+    if ((userRole === "learner" || userRole === "student") && payments.length === 0) {
+      const BookingModel = require("../models/booking.model");
+      const completedBookings = await BookingModel.find({
+        user: userId,
+        status: 'completed'
+      }).populate('service', 'name description title price')
+        .populate('guide', 'name email');
+      
+      console.log("Found orphaned completed bookings:", completedBookings.length);
+      
+      // Create payment records for orphaned completed bookings
+      const paymentService = require("../services/payment.service");
+      for (const booking of completedBookings) {
+        try {
+          const paymentData = {
+            booking: booking._id,
+            user: booking.user,
+            guide: booking.guide._id,
+            service: booking.service._id,
+            amount: booking.price || booking.service.price || 0,
+            currency: "INR",
+            status: "completed",
+            paymentMethod: (booking.price === 0 || booking.service.price === 0) ? "free" : "razorpay",
+            transactionId: (booking.price === 0 || booking.service.price === 0) ? `FREE_${booking._id}` : `RETRO_${booking._id}`,
+            paidAt: booking.sessionEndedAt || booking.updatedAt
+          };
+          
+          await paymentService.createPaymentRecord(paymentData);
+          console.log(`Created retroactive payment record for booking ${booking._id}`);
+        } catch (error) {
+          console.error(`Failed to create retroactive payment for booking ${booking._id}:`, error);
+        }
+      }
+      
+      // Re-fetch payments after creating retroactive records
+      const updatedPayments = await PaymentModel.find(query)
+        .populate('booking', 'dateAndTime status')
+        .populate('service', 'name description title')
+        .populate('user', 'name email')
+        .populate('guide', 'name email')
+        .sort({ createdAt: -1 });
+      
+      console.log("Found payments after retroactive creation:", updatedPayments.length);
+      
+      return res.status(httpStatus.ok).json({
+        success: true,
+        data: {
+          payments: updatedPayments,
+          total: updatedPayments.length
+        }
+      });
+    }
 
     console.log("Found payments:", payments.length);
 

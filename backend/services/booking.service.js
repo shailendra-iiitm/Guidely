@@ -281,6 +281,30 @@ const updateBookingStatuses = async () => {
     );
     console.log("Updated past confirmed to completed:", completedResult.modifiedCount);
     
+    // Update payment records for newly completed bookings
+    if (completedResult.modifiedCount > 0) {
+      try {
+        const PaymentModel = require('../models/payment.model');
+        const completedBookings = await BookingModel.find({
+          status: 'completed',
+          updatedAt: { $gte: new Date(Date.now() - 5000) } // Updated in last 5 seconds
+        });
+        
+        for (const booking of completedBookings) {
+          const payment = await PaymentModel.findOne({ booking: booking._id });
+          if (payment && payment.status === 'pending') {
+            await PaymentModel.findByIdAndUpdate(payment._id, {
+              status: 'completed',
+              paidAt: new Date()
+            });
+            console.log(`Auto-updated payment ${payment._id} to completed`);
+          }
+        }
+      } catch (paymentError) {
+        console.error("Error updating payment statuses:", paymentError);
+      }
+    }
+    
     // Update confirmed bookings to 'upcoming' when they're within 24 hours
     const upcomingResult = await BookingModel.updateMany(
       { 
