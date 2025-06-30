@@ -9,12 +9,14 @@ import coding from "../assets/coding.png";
 import TopGuides from "../components/TopGuides";
 import { Nav } from "../components/Nav";
 import { NavLink } from "react-router-dom";
+import feedbackAPI from "../apiManger/feedback";
 
 const Home = () => {
   const [isOpen, setIsOpen] = useState({});
   const [showSupport, setShowSupport] = useState(false);
-  const [showFeedbackManager, setShowFeedbackManager] = useState(false);
-  const [feedbackSubmissions, setFeedbackSubmissions] = useState([]);
+  const [trackingToken, setTrackingToken] = useState('');
+  const [feedbackStatus, setFeedbackStatus] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -33,8 +35,13 @@ const Home = () => {
   const toggleSupport = () => {
     setShowSupport(!showSupport);
     if (!showSupport) {
-      const supportSection = document.getElementById('support-section');
-      supportSection.scrollIntoView({ behavior: 'smooth' });
+      // Use setTimeout to ensure the element is rendered before scrolling
+      setTimeout(() => {
+        const supportSection = document.getElementById('support-section');
+        if (supportSection) {
+          supportSection.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 100);
     }
   };
 
@@ -46,7 +53,7 @@ const Home = () => {
     }));
   };
 
-  const handleSubmitFeedback = (e) => {
+  const handleSubmitFeedback = async (e) => {
     e.preventDefault();
     
     // Validate form
@@ -55,55 +62,53 @@ const Home = () => {
       return;
     }
 
-    // Create new feedback submission
-    const newSubmission = {
-      id: Date.now(),
-      ...formData,
-      timestamp: new Date().toLocaleString(),
-      status: 'pending'
-    };
+    setIsSubmitting(true);
 
-    // Add to submissions
-    setFeedbackSubmissions(prev => [...prev, newSubmission]);
+    try {
+      // Submit to backend
+      const response = await feedbackAPI.submitFeedback(formData);
+      
+      if (response.data.success) {
+        const token = response.data.data.token;
+        
+        // Clear form
+        setFormData({
+          name: '',
+          email: '',
+          type: '',
+          subject: '',
+          message: ''
+        });
 
-    // Clear form
-    setFormData({
-      name: '',
-      email: '',
-      type: '',
-      subject: '',
-      message: ''
-    });
-
-    // Show success message
-    alert('Thank you for your feedback! We will review it and get back to you soon.');
-    
-    // Close support form
-    setShowSupport(false);
+        // Show success message with tracking token
+        alert(`✅ Thank you for your feedback!\n\n🎫 Your tracking token: ${token}\n\n📝 Save this token to track your feedback status at any time.\n\n✉️ You can also email us directly at guidely.iiit@gmail.com`);
+        
+        // Close support form
+        setShowSupport(false);
+      }
+    } catch (error) {
+      console.error('Error submitting feedback:', error);
+      alert('Failed to submit feedback. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
-  const updateFeedbackStatus = (id, newStatus) => {
-    setFeedbackSubmissions(prev => 
-      prev.map(submission => 
-        submission.id === id 
-          ? { ...submission, status: newStatus }
-          : submission
-      )
-    );
-  };
+  const trackFeedbackStatus = async () => {
+    if (!trackingToken.trim()) {
+      alert('Please enter a valid tracking token');
+      return;
+    }
 
-  const deleteFeedback = (id) => {
-    setFeedbackSubmissions(prev => prev.filter(submission => submission.id !== id));
-  };
-
-  const getCategorizedFeedbacks = () => {
-    return {
-      suggestion: feedbackSubmissions.filter(f => f.type === 'suggestion'),
-      complaint: feedbackSubmissions.filter(f => f.type === 'complaint'),
-      'bug-report': feedbackSubmissions.filter(f => f.type === 'bug-report'),
-      'feature-request': feedbackSubmissions.filter(f => f.type === 'feature-request'),
-      general: feedbackSubmissions.filter(f => f.type === 'general')
-    };
+    try {
+      const response = await feedbackAPI.trackFeedback(trackingToken.trim());
+      if (response.data.success) {
+        setFeedbackStatus(response.data.data);
+      }
+    } catch (error) {
+      console.error('Error tracking feedback:', error);
+      alert('Invalid tracking token or feedback not found');
+    }
   };
 
   return (
@@ -1142,12 +1147,6 @@ const Home = () => {
                 >
                   Close Support
                 </button>
-                <button
-                  onClick={() => setShowFeedbackManager(!showFeedbackManager)}
-                  className="mb-4 ml-4 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition duration-200"
-                >
-                  {showFeedbackManager ? 'Hide' : 'View'} Feedback Manager ({feedbackSubmissions.length})
-                </button>
               </div>
             
             <div className="bg-white rounded-lg shadow-lg p-8">
@@ -1236,9 +1235,14 @@ const Home = () => {
                 <div className="text-center">
                   <button
                     type="submit"
-                    className="px-8 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-semibold rounded-lg hover:from-purple-700 hover:to-blue-700 transition duration-300 transform hover:scale-105"
+                    disabled={isSubmitting}
+                    className={`px-8 py-3 font-semibold rounded-lg transition duration-300 transform ${
+                      isSubmitting 
+                        ? 'bg-gray-400 cursor-not-allowed' 
+                        : 'bg-gradient-to-r from-purple-600 to-blue-600 text-white hover:from-purple-700 hover:to-blue-700 hover:scale-105'
+                    }`}
                   >
-                    Submit Feedback
+                    {isSubmitting ? 'Submitting...' : 'Submit Feedback'}
                   </button>
                 </div>
               </form>
@@ -1259,126 +1263,55 @@ const Home = () => {
                 </div>
               </div>
               
-              {/* Feedback Management Interface */}
-              {showFeedbackManager && (
-                <div className="mt-8 bg-gray-50 rounded-lg p-6">
-                  <h3 className="text-2xl font-bold text-gray-900 mb-6">Feedback Management System</h3>
-                  
-                  {feedbackSubmissions.length === 0 ? (
-                    <p className="text-gray-600 text-center py-8">No feedback submissions yet.</p>
-                  ) : (
-                    <div className="space-y-6">
-                      {Object.entries(getCategorizedFeedbacks()).map(([category, feedbacks]) => (
-                        feedbacks.length > 0 && (
-                          <div key={category} className="bg-white rounded-lg p-4 shadow-sm">
-                            <h4 className="text-lg font-semibold text-gray-800 mb-4 capitalize flex items-center">
-                              <span className={`w-3 h-3 rounded-full mr-2 ${
-                                category === 'complaint' ? 'bg-red-500' :
-                                category === 'bug-report' ? 'bg-orange-500' :
-                                category === 'suggestion' ? 'bg-green-500' :
-                                category === 'feature-request' ? 'bg-blue-500' :
-                                'bg-gray-500'
-                              }`}></span>
-                              {category.replace('-', ' ')} ({feedbacks.length})
-                            </h4>
-                            
-                            <div className="space-y-3">
-                              {feedbacks.map((feedback) => (
-                                <div key={feedback.id} className="border border-gray-200 rounded-lg p-4">
-                                  <div className="flex justify-between items-start mb-2">
-                                    <div className="flex-1">
-                                      <h5 className="font-medium text-gray-900">{feedback.subject}</h5>
-                                      <p className="text-sm text-gray-600">
-                                        From: {feedback.name} ({feedback.email}) | {feedback.timestamp}
-                                      </p>
-                                    </div>
-                                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                      feedback.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-                                      feedback.status === 'in-progress' ? 'bg-blue-100 text-blue-800' :
-                                      feedback.status === 'resolved' ? 'bg-green-100 text-green-800' :
-                                      'bg-gray-100 text-gray-800'
-                                    }`}>
-                                      {feedback.status}
-                                    </span>
-                                  </div>
-                                  
-                                  <p className="text-gray-700 mb-3">{feedback.message}</p>
-                                  
-                                  <div className="flex flex-wrap gap-2">
-                                    <button
-                                      onClick={() => updateFeedbackStatus(feedback.id, 'in-progress')}
-                                      className="px-3 py-1 bg-blue-500 text-white text-xs rounded hover:bg-blue-600 transition"
-                                      disabled={feedback.status === 'in-progress'}
-                                    >
-                                      Mark In Progress
-                                    </button>
-                                    <button
-                                      onClick={() => updateFeedbackStatus(feedback.id, 'resolved')}
-                                      className="px-3 py-1 bg-green-500 text-white text-xs rounded hover:bg-green-600 transition"
-                                      disabled={feedback.status === 'resolved'}
-                                    >
-                                      Mark Resolved
-                                    </button>
-                                    <button
-                                      onClick={() => updateFeedbackStatus(feedback.id, 'pending')}
-                                      className="px-3 py-1 bg-yellow-500 text-white text-xs rounded hover:bg-yellow-600 transition"
-                                    >
-                                      Reset to Pending
-                                    </button>
-                                    <button
-                                      onClick={() => {
-                                        if (window.confirm('Are you sure you want to delete this feedback?')) {
-                                          deleteFeedback(feedback.id);
-                                        }
-                                      }}
-                                      className="px-3 py-1 bg-red-500 text-white text-xs rounded hover:bg-red-600 transition"
-                                    >
-                                      Delete
-                                    </button>
-                                  </div>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        )
-                      ))}
-                      
-                      {/* Summary Statistics */}
-                      <div className="bg-white rounded-lg p-4 shadow-sm">
-                        <h4 className="text-lg font-semibold text-gray-800 mb-4">Summary Statistics</h4>
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                          <div className="text-center">
-                            <div className="text-2xl font-bold text-blue-600">
-                              {feedbackSubmissions.length}
-                            </div>
-                            <div className="text-sm text-gray-600">Total Submissions</div>
-                          </div>
-                          <div className="text-center">
-                            <div className="text-2xl font-bold text-yellow-600">
-                              {feedbackSubmissions.filter(f => f.status === 'pending').length}
-                            </div>
-                            <div className="text-sm text-gray-600">Pending</div>
-                          </div>
-                          <div className="text-center">
-                            <div className="text-2xl font-bold text-blue-600">
-                              {feedbackSubmissions.filter(f => f.status === 'in-progress').length}
-                            </div>
-                            <div className="text-sm text-gray-600">In Progress</div>
-                          </div>
-                          <div className="text-center">
-                            <div className="text-2xl font-bold text-green-600">
-                              {feedbackSubmissions.filter(f => f.status === 'resolved').length}
-                            </div>
-                            <div className="text-sm text-gray-600">Resolved</div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  )}
+              {/* Feedback Tracking */}
+              <div className="mt-8 bg-blue-50 rounded-lg p-6">
+                <h3 className="text-lg font-semibold text-gray-800 mb-4">Track Your Feedback</h3>
+                <p className="text-sm text-gray-600 mb-4">
+                  Have a tracking token? Enter it below to check the status of your feedback.
+                </p>
+                <div className="flex gap-3">
+                  <input
+                    type="text"
+                    placeholder="Enter tracking token (e.g., FB12AB34)"
+                    value={trackingToken}
+                    onChange={(e) => setTrackingToken(e.target.value)}
+                    className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                  <button
+                    onClick={trackFeedbackStatus}
+                    className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition"
+                  >
+                    Track
+                  </button>
                 </div>
-              )}
-            </div>            </div>
-          </section>
+                
+                {feedbackStatus && (
+                  <div className="mt-4 p-4 bg-white rounded-lg border">
+                    <h4 className="font-medium text-gray-800 mb-2">Feedback Status</h4>
+                    <div className="space-y-2 text-sm">
+                      <p><span className="font-medium">Token:</span> {feedbackStatus.token}</p>
+                      <p><span className="font-medium">Type:</span> {feedbackStatus.type}</p>
+                      <p><span className="font-medium">Subject:</span> {feedbackStatus.subject}</p>
+                      <p><span className="font-medium">Status:</span> 
+                        <span className={`ml-2 px-2 py-1 rounded-full text-xs font-medium ${
+                          feedbackStatus.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
+                          feedbackStatus.status === 'in-progress' ? 'bg-blue-100 text-blue-800' :
+                          'bg-green-100 text-green-800'
+                        }`}>
+                          {feedbackStatus.status}
+                        </span>
+                      </p>
+                      <p><span className="font-medium">Submitted:</span> {new Date(feedbackStatus.submittedAt).toLocaleDateString()}</p>
+                      {feedbackStatus.resolvedAt && (
+                        <p><span className="font-medium">Resolved:</span> {new Date(feedbackStatus.resolvedAt).toLocaleDateString()}</p>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </section>
         )}
 
            {/* Campaign & Call to Guidely */}
