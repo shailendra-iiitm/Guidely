@@ -80,15 +80,30 @@ const Home = () => {
           message: ''
         });
 
-        // Show success message with tracking token
-        alert(`✅ Thank you for your feedback!\n\n🎫 Your tracking token: ${token}\n\n📝 Save this token to track your feedback status at any time.\n\n✉️ You can also email us directly at guidely.iiit@gmail.com`);
+        // Determine which endpoint was used based on token prefix and console logs
+        let endpointInfo = '';
+        if (token.startsWith('FB')) {
+          endpointInfo = '\n💾 Saved locally (network unavailable)';
+        } else if (window.location.hostname === 'localhost') {
+          endpointInfo = '\n🔧 Submitted via development server';
+        } else {
+          endpointInfo = '\n🌐 Submitted via live server';
+        }
+        
+        alert(`✅ Thank you for your feedback!${endpointInfo}\n\n🎫 Your tracking token: ${token}\n\n📝 Save this token to track your feedback status at any time.\n\n✉️ You can also email us directly at guidely.iiit@gmail.com`);
         
         // Close support form
         setShowSupport(false);
       }
     } catch (error) {
       console.error('Error submitting feedback:', error);
-      alert('Failed to submit feedback. Please try again.');
+      
+      // More helpful error message
+      const errorMessage = error.message && error.message.includes('All endpoints failed') 
+        ? 'Unable to connect to servers and local storage failed. Please check your connection and try again, or email us directly at guidely.iiit@gmail.com'
+        : 'Failed to submit feedback. Please try again or email us directly at guidely.iiit@gmail.com';
+        
+      alert(`❌ ${errorMessage}`);
     } finally {
       setIsSubmitting(false);
     }
@@ -104,10 +119,23 @@ const Home = () => {
       const response = await feedbackAPI.trackFeedback(trackingToken.trim());
       if (response.data.success) {
         setFeedbackStatus(response.data.data);
+        
+        // Show source info
+        const token = trackingToken.trim();
+        if (token.startsWith('FB')) {
+          console.log('📍 Feedback retrieved from local storage');
+        } else {
+          console.log('📍 Feedback retrieved from server');
+        }
       }
     } catch (error) {
       console.error('Error tracking feedback:', error);
-      alert('Invalid tracking token or feedback not found');
+      
+      const errorMessage = error.message && error.message.includes('All endpoints failed')
+        ? 'Unable to connect to servers and token not found locally. Please check your connection or verify your token.'
+        : 'Invalid tracking token or feedback not found. Please check your token and try again.';
+        
+      alert(`❌ ${errorMessage}`);
     }
   };
 
@@ -1141,6 +1169,15 @@ const Home = () => {
                 <p className="text-xl text-gray-700 mb-8">
                   We're here to help! Share your feedback, suggestions, or report any issues you're experiencing.
                 </p>
+                
+                {/* Environment indicator for local development */}
+                {(window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') && (
+                  <div className="mb-4 p-3 bg-blue-100 border border-blue-300 rounded-lg">
+                    <p className="text-sm text-blue-800">
+                      🔧 <strong>Development Mode:</strong> Feedback will try local server first, then fallback to deployed server if needed.
+                    </p>
+                  </div>
+                )}
                 <button
                   onClick={() => setShowSupport(false)}
                   className="mb-4 px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition duration-200"

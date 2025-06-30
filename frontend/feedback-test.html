@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feedback LocalStorage Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .result {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            white-space: pre-wrap;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        input, textarea, select {
+            width: 100%;
+            padding: 8px;
+            margin: 5px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Feedback LocalStorage Test</h1>
+        
+        <div class="test-section">
+            <h3>📝 Submit Test Feedback</h3>
+            <input type="text" id="name" placeholder="Your Name" value="Test User">
+            <input type="email" id="email" placeholder="Your Email" value="test@example.com">
+            <select id="type">
+                <option value="bug">Bug Report</option>
+                <option value="feature">Feature Request</option>
+                <option value="support">Support</option>
+                <option value="other">Other</option>
+            </select>
+            <input type="text" id="subject" placeholder="Subject" value="Test Feedback">
+            <textarea id="message" placeholder="Your message" rows="4">This is a test message to verify localStorage fallback works correctly.</textarea>
+            <button onclick="testSubmit()">Submit Test Feedback</button>
+            <div id="submitResult" class="result" style="display: none;"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>🔍 Track Feedback</h3>
+            <input type="text" id="trackToken" placeholder="Enter tracking token">
+            <button onclick="testTrack()">Track Feedback</button>
+            <div id="trackResult" class="result" style="display: none;"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>🧪 Quick Tests</h3>
+            <button onclick="runAllTests()">Run All Tests</button>
+            <button onclick="clearStorage()">Clear Storage</button>
+            <button onclick="viewStorage()">View Storage</button>
+            <div id="testResults" class="result" style="display: none;"></div>
+        </div>
+    </div>
+
+    <script>
+        // localStorage feedback functions (copied from feedback.js)
+        const saveToLocalStorage = (feedbackData) => {
+            try {
+                const token = 'FB' + Math.random().toString(36).substr(2, 6).toUpperCase();
+                const submission = {
+                    token,
+                    ...feedbackData,
+                    timestamp: new Date().toISOString(),
+                    status: 'pending',
+                    submittedAt: new Date().toISOString()
+                };
+                
+                const existing = JSON.parse(localStorage.getItem('guidely_feedback_submissions') || '[]');
+                existing.push(submission);
+                
+                localStorage.setItem('guidely_feedback_submissions', JSON.stringify(existing));
+                localStorage.setItem('guidely_feedback_last_cleanup', Date.now().toString());
+                
+                return {
+                    data: {
+                        success: true,
+                        data: {
+                            token: submission.token,
+                            status: submission.status,
+                            submittedAt: submission.submittedAt
+                        }
+                    }
+                };
+            } catch (error) {
+                throw new Error('Failed to save feedback locally');
+            }
+        };
+
+        const getFromLocalStorage = (token) => {
+            try {
+                const submissions = JSON.parse(localStorage.getItem('guidely_feedback_submissions') || '[]');
+                const submission = submissions.find(s => s.token === token);
+                
+                if (!submission) {
+                    throw new Error('Feedback not found');
+                }
+                
+                return {
+                    data: {
+                        success: true,
+                        data: {
+                            token: submission.token,
+                            type: submission.type,
+                            subject: submission.subject,
+                            status: submission.status,
+                            priority: 'medium',
+                            submittedAt: submission.submittedAt,
+                            lastUpdated: submission.timestamp
+                        }
+                    }
+                };
+            } catch (error) {
+                throw new Error('Feedback not found or invalid token');
+            }
+        };
+
+        // Test functions
+        function testSubmit() {
+            const formData = {
+                name: document.getElementById('name').value,
+                email: document.getElementById('email').value,
+                type: document.getElementById('type').value,
+                subject: document.getElementById('subject').value,
+                message: document.getElementById('message').value
+            };
+
+            try {
+                const result = saveToLocalStorage(formData);
+                showResult('submitResult', `✅ Success!\nToken: ${result.data.data.token}\nStatus: ${result.data.data.status}\nSubmitted: ${result.data.data.submittedAt}`, 'success');
+                
+                // Auto-fill track token
+                document.getElementById('trackToken').value = result.data.data.token;
+            } catch (error) {
+                showResult('submitResult', `❌ Error: ${error.message}`, 'error');
+            }
+        }
+
+        function testTrack() {
+            const token = document.getElementById('trackToken').value.trim();
+            if (!token) {
+                alert('Please enter a tracking token');
+                return;
+            }
+
+            try {
+                const result = getFromLocalStorage(token);
+                const data = result.data.data;
+                showResult('trackResult', `✅ Found!\nToken: ${data.token}\nType: ${data.type}\nSubject: ${data.subject}\nStatus: ${data.status}\nSubmitted: ${data.submittedAt}`, 'success');
+            } catch (error) {
+                showResult('trackResult', `❌ Error: ${error.message}`, 'error');
+            }
+        }
+
+        function runAllTests() {
+            let results = '🧪 Running All Tests...\n\n';
+            
+            // Test 1: Submit feedback
+            try {
+                const testData = {
+                    name: 'Test User',
+                    email: 'test@example.com',
+                    type: 'bug',
+                    subject: 'Automated Test',
+                    message: 'This is an automated test message.'
+                };
+                
+                const submitResult = saveToLocalStorage(testData);
+                results += '✅ Test 1 (Submit): PASSED\n';
+                results += `   Token: ${submitResult.data.data.token}\n\n`;
+                
+                // Test 2: Track feedback
+                const trackResult = getFromLocalStorage(submitResult.data.data.token);
+                results += '✅ Test 2 (Track): PASSED\n';
+                results += `   Retrieved: ${trackResult.data.data.subject}\n\n`;
+                
+                // Test 3: Invalid token
+                try {
+                    getFromLocalStorage('INVALID123');
+                    results += '❌ Test 3 (Invalid Token): FAILED - Should have thrown error\n';
+                } catch (error) {
+                    results += '✅ Test 3 (Invalid Token): PASSED\n';
+                    results += `   Correctly rejected: ${error.message}\n\n`;
+                }
+                
+                results += '🎉 All tests completed successfully!';
+                showResult('testResults', results, 'success');
+                
+            } catch (error) {
+                results += `❌ Tests failed: ${error.message}`;
+                showResult('testResults', results, 'error');
+            }
+        }
+
+        function clearStorage() {
+            localStorage.removeItem('guidely_feedback_submissions');
+            localStorage.removeItem('guidely_feedback_last_cleanup');
+            showResult('testResults', '🗑️ Storage cleared successfully!', 'success');
+        }
+
+        function viewStorage() {
+            const submissions = JSON.parse(localStorage.getItem('guidely_feedback_submissions') || '[]');
+            const lastCleanup = localStorage.getItem('guidely_feedback_last_cleanup');
+            
+            let info = `📊 Storage Status:\n`;
+            info += `Total submissions: ${submissions.length}\n`;
+            info += `Last cleanup: ${lastCleanup ? new Date(parseInt(lastCleanup)).toLocaleString() : 'Never'}\n\n`;
+            
+            if (submissions.length > 0) {
+                info += `Recent submissions:\n`;
+                submissions.slice(-3).forEach((sub, idx) => {
+                    info += `${idx + 1}. ${sub.token} - ${sub.subject} (${sub.status})\n`;
+                });
+            }
+            
+            showResult('testResults', info, 'success');
+        }
+
+        function showResult(elementId, message, type) {
+            const element = document.getElementById(elementId);
+            element.textContent = message;
+            element.className = `result ${type}`;
+            element.style.display = 'block';
+        }
+
+        // Auto-run basic test on page load
+        window.addEventListener('load', () => {
+            console.log('🧪 Feedback LocalStorage Test loaded');
+            console.log('Ready to test localStorage fallback functionality');
+        });
+    </script>
+</body>
+</html>
