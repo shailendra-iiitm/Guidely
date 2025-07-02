@@ -1,0 +1,20 @@
+{
+  "name": "guidely",
+  "version": "1.0.0",
+  "description": "A platform connecting guides and learners for personalized knowledge sharing and sessions",
+  "main": "index.js",
+  "scripts": {
+    "start": "node backend/index.js",
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "server": "cd backend && npm run dev",
+    "client": "cd frontend && npm run dev",
+    "build": "cd frontend && npm run build",
+    "install-deps": "npm install && cd backend && npm install && cd ../frontend && npm install"
+  },
+  "keywords": ["education", "learning", "mentoring", "platform"],
+  "author": "Shailendra",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.0"
+  }
+}

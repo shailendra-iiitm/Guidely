@@ -1,12 +1,20 @@
 # Files to ignore during Vercel deployment
+backend/
+node_modules/
+.git/
+.gitignore
+*.md
+!README.md
+.env*
+pqrst/
+docs/
+uploads/
+test-*.js
+*.log
+FEEDBACK_FALLBACK_FIXES.md
+PAYMENT_BOOKING_FIXES.md
 VERCEL_DEPLOYMENT.md
 setup-vercel.sh
 setup-vercel.bat
 DEPLOYMENT_NOTES.md
 LOCAL_SETUP.md
-docs/
-pqrst/
-*.md
-!README.md
-.git/
-.gitignore
