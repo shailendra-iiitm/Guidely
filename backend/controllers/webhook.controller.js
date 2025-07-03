@@ -100,6 +100,46 @@ const handleRazorpayWebhook = async (req, res, next) => {
         
         console.log('=== BOOKING UPDATED SUCCESSFULLY ===');
 
+        // **FIX: UPDATE PAYMENT RECORD WITH TRANSACTION DETAILS**
+        console.log('=== UPDATING PAYMENT RECORD ===');
+        const PaymentModel = require("../models/payment.model");
+        const payment = await PaymentModel.findOne({ booking: bookingId });
+        
+        if (payment) {
+          // Extract transaction details from webhook payload
+          let transactionId = null;
+          let razorpayPaymentId = null;
+          let razorpayOrderId = null;
+          
+          if (payload?.payment?.entity) {
+            razorpayPaymentId = payload.payment.entity.id;
+            razorpayOrderId = payload.payment.entity.order_id;
+            transactionId = payload.payment.entity.id;
+          } else if (payload?.order?.entity) {
+            razorpayOrderId = payload.order.entity.id;
+            razorpayPaymentId = payload.order.entity.id;
+            transactionId = payload.order.entity.id;
+          }
+          
+          // Update payment record with transaction details
+          await PaymentModel.findByIdAndUpdate(payment._id, {
+            status: 'completed',
+            transactionId: transactionId,
+            razorpayPaymentId: razorpayPaymentId,
+            razorpayOrderId: razorpayOrderId,
+            paidAt: new Date()
+          });
+          
+          console.log('=== PAYMENT RECORD UPDATED ===', {
+            paymentId: payment._id,
+            transactionId: transactionId,
+            razorpayPaymentId: razorpayPaymentId,
+            razorpayOrderId: razorpayOrderId
+          });
+        } else {
+          console.log('=== NO PAYMENT RECORD FOUND FOR BOOKING ===', bookingId);
+        }
+
         // Send confirmation email
         console.log('=== SENDING CONFIRMATION EMAIL ===');
         await emailService.sendConfirmationMail(
