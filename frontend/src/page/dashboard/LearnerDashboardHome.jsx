@@ -4,6 +4,8 @@ import { UserOutlined, CalendarOutlined, BookOutlined, TrophyOutlined, Exclamati
 import { useNavigate } from "react-router-dom";
 import guideAPI from "../../apiManger/guide";
 import bookingAPI from "../../apiManger/booking";
+import learningProgressAPI from "../../apiManger/learningProgress";
+import { BASE_URL } from "../../const/env.const";
 
 const LearnerDashboardHome = () => {
   const navigate = useNavigate();
@@ -11,7 +13,10 @@ const LearnerDashboardHome = () => {
     totalSessions: 0,
     upcomingSessions: 0,
     totalSpent: 0,
-    skillsLearned: 0
+    skillsLearned: 0,
+    skillsCount: 0,
+    currentStreak: 0,
+    totalHours: 0
   });
   const [recentGuides, setRecentGuides] = useState([]);
   const [upcomingSessions, setUpcomingSessions] = useState([]);
@@ -24,7 +29,36 @@ const LearnerDashboardHome = () => {
         setLoading(true);
         setError(null);
         
-        // Fetch real learner bookings to calculate statistics
+        // Fetch real dashboard metrics from backend using the same API as LearningProgress
+        try {
+          console.log('🔍 Debug - Fetching learning progress data...');
+          const response = await learningProgressAPI.getLearningProgress();
+          console.log('✅ Learning progress response:', response);
+          
+          const progressData = response.data.data;
+          
+          // Set stats with proper mapping (same as LearningProgress component)
+          setStats(prevStats => ({
+            ...prevStats,
+            totalSessions: progressData.stats?.totalSessions || 0,
+            skillsLearned: progressData.stats?.skillsLearned || 0,
+            skillsCount: progressData.stats?.skillsLearned || 0,
+            currentStreak: progressData.stats?.currentStreak || 0,
+            totalHours: progressData.stats?.totalHours || 0
+          }));
+          
+          console.log('✅ Dashboard stats updated:', {
+            totalSessions: progressData.stats?.totalSessions || 0,
+            skillsLearned: progressData.stats?.skillsLearned || 0,
+            currentStreak: progressData.stats?.currentStreak || 0,
+            totalHours: progressData.stats?.totalHours || 0
+          });
+          
+        } catch (error) {
+          console.error("❌ Error fetching learning progress:", error);
+        }
+        
+        // Fetch real learner bookings for upcoming sessions and spending
         try {
           const bookingsResponse = await bookingAPI.getLearnerBookings();
           const bookings = bookingsResponse?.data?.bookings || [];
@@ -32,7 +66,7 @@ const LearnerDashboardHome = () => {
           // Calculate real statistics from bookings
           const now = new Date();
           const completedBookings = bookings.filter(booking => 
-            booking.status === "confirmed" && new Date(booking.dateAndTime) < now
+            booking.status === "completed"
           );
           const upcomingBookings = bookings.filter(booking => 
             booking.status === "confirmed" && new Date(booking.dateAndTime) >= now
@@ -40,21 +74,11 @@ const LearnerDashboardHome = () => {
           
           const totalSpent = completedBookings.reduce((sum, booking) => sum + (booking.price || 0), 0);
           
-          // Get unique skills from completed sessions
-          const uniqueSkills = new Set();
-          completedBookings.forEach(booking => {
-            if (booking.service?.name) {
-              // Extract skills from service names or descriptions
-              uniqueSkills.add(booking.service.name);
-            }
-          });
-          
-          setStats({
-            totalSessions: completedBookings.length,
+          setStats(prevStats => ({
+            ...prevStats,
             upcomingSessions: upcomingBookings.length,
-            totalSpent: totalSpent,
-            skillsLearned: uniqueSkills.size
-          });
+            totalSpent: totalSpent
+          }));
           
           // Set upcoming sessions
           const formattedUpcomingSessions = upcomingBookings.slice(0, 3).map(booking => ({
@@ -69,7 +93,7 @@ const LearnerDashboardHome = () => {
           
         } catch (error) {
           console.error("Error fetching bookings:", error);
-          // Keep default stats as 0 if no bookings API access
+          message.error("Failed to load booking data");
         }
         
         // Fetch guides for the "Popular Guides" section
@@ -145,6 +169,34 @@ const LearnerDashboardHome = () => {
         </Card>
         <Card>
           <Statistic
+            title="Skills Learned"
+            value={stats.skillsLearned}
+            prefix={<TrophyOutlined className="text-yellow-500" />}
+          />
+        </Card>
+        <Card>
+          <Statistic
+            title="Day Streak"
+            value={stats.currentStreak}
+            prefix="🔥"
+            valueStyle={{ color: '#ff4d4f' }}
+          />
+        </Card>
+        <Card>
+          <Statistic
+            title="Total Hours"
+            value={stats.totalHours}
+            prefix="⏱️"
+            suffix="hrs"
+            valueStyle={{ color: '#722ed1' }}
+          />
+        </Card>
+      </div>
+
+      {/* Secondary Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <Card>
+          <Statistic
             title="Upcoming Sessions"
             value={stats.upcomingSessions}
             prefix={<CalendarOutlined className="text-green-500" />}
@@ -156,13 +208,6 @@ const LearnerDashboardHome = () => {
             value={stats.totalSpent}
             prefix="₹"
             suffix=""
-          />
-        </Card>
-        <Card>
-          <Statistic
-            title="Skills Learned"
-            value={stats.skillsLearned}
-            prefix={<TrophyOutlined className="text-yellow-500" />}
           />
         </Card>
       </div>

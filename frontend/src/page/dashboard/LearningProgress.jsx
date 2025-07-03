@@ -26,12 +26,24 @@ const LearningProgress = () => {
     setLoading(true);
     setError(null);
     try {
+      console.log("Fetching learning progress from API...");
       const response = await learningProgressAPI.getLearningProgress();
+      console.log("Learning progress response:", response);
+      
       const progressData = response.data.data;
       
-      setLearningStats(progressData.stats);
+      // Set learning stats with proper mapping
+      setLearningStats({
+        sessionsCompleted: progressData.stats?.totalSessions || 0,
+        totalHours: progressData.stats?.totalHours || 0,
+        skillsLearned: progressData.stats?.skillsLearned || 0,
+        dayStreak: progressData.stats?.currentStreak || 0,
+        averageRating: progressData.stats?.averageRating || 0,
+        totalSpent: progressData.stats?.totalSpent || 0
+      });
+      
       setSkillProgress(progressData.skillProgress || []);
-      setRecentActivity(progressData.recentActivity || []);
+      setRecentActivity(progressData.recentSessions || []);
       setAchievements(progressData.achievements || []);
       
     } catch (error) {
