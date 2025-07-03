@@ -49,6 +49,23 @@ const userSchema = new Schema(
                     icon: { type: String, default: "trophy" }
                 }]
             },
+            // Dashboard Metrics for Learners
+            learnerMetrics: {
+                totalSessions: { type: Number, default: 0 },
+                skillsLearned: { type: [String], default: [] },
+                currentStreak: { type: Number, default: 0 },
+                totalHours: { type: Number, default: 0 },
+                lastUpdated: { type: Date, default: Date.now }
+            },
+            // Dashboard Metrics for Guides
+            guideMetrics: {
+                totalSessions: { type: Number, default: 0 },
+                uniqueLearners: { type: Number, default: 0 },
+                skillsTaught: { type: [String], default: [] },
+                totalEarnings: { type: Number, default: 0 },
+                totalHours: { type: Number, default: 0 },
+                lastUpdated: { type: Date, default: Date.now }
+            }
         },
         { timestamps: true}
 );

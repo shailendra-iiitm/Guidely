@@ -161,9 +161,190 @@ const getUserProfile = async (req, res, next) => {
   }
 };
 
+// Get dashboard metrics for current user
+const getDashboardMetrics = async (req, res, next) => {
+  try {
+    const userId = req.user._id;
+    const userRole = req.user.role;
+    
+    console.log("Getting dashboard metrics for user:", userId, "role:", userRole);
+    
+    const user = await userService.getUserById(userId);
+    if (!user) {
+      return next(new ApiError(httpStatus.notFound, "User not found"));
+    }
+    
+    let metrics = {};
+    
+    if (userRole === 'learner') {
+      // Get learner metrics from user profile
+      metrics = user.learnerMetrics || {
+        totalSessions: 0,
+        skillsLearned: [],
+        currentStreak: 0,
+        totalHours: 0,
+        lastUpdated: null
+      };
+      
+      // Calculate real-time metrics if needed
+      if (!metrics.lastUpdated || Date.now() - new Date(metrics.lastUpdated).getTime() > 24 * 60 * 60 * 1000) {
+        const dashboardMetricsService = require('../services/dashboardMetrics.service');
+        await dashboardMetricsService.updateLearnerMetrics(userId);
+        
+        // Refetch updated metrics
+        const updatedUser = await userService.getUserById(userId);
+        metrics = updatedUser.learnerMetrics;
+      }
+      
+    } else if (userRole === 'guide') {
+      // Get guide metrics from user profile
+      metrics = user.guideMetrics || {
+        totalSessions: 0,
+        uniqueLearners: 0,
+        skillsTaught: [],
+        totalEarnings: 0,
+        totalHours: 0,
+        lastUpdated: null
+      };
+      
+      // Calculate real-time metrics if needed
+      if (!metrics.lastUpdated || Date.now() - new Date(metrics.lastUpdated).getTime() > 24 * 60 * 60 * 1000) {
+        const dashboardMetricsService = require('../services/dashboardMetrics.service');
+        await dashboardMetricsService.updateGuideMetrics(userId);
+        
+        // Refetch updated metrics
+        const updatedUser = await userService.getUserById(userId);
+        metrics = updatedUser.guideMetrics;
+      }
+    }
+    
+    res.status(httpStatus.ok).json({
+      success: true,
+      message: "Dashboard metrics retrieved successfully",
+      data: {
+        ...metrics,
+        skillsCount: userRole === 'learner' ? metrics.skillsLearned?.length || 0 : metrics.skillsTaught?.length || 0
+      }
+    });
+    
+  } catch (error) {
+    console.error("Error getting dashboard metrics:", error);
+    return next(error);
+  }
+};
+
+// Get all available skills for management
+const getAvailableSkills = async (req, res, next) => {
+  try {
+    const ServiceModel = require('../models/service.model');
+    
+    // Get all unique skills from all services
+    const skillsAgg = await ServiceModel.aggregate([
+      { $unwind: '$skills' },
+      { $group: { _id: '$skills' } },
+      { $sort: { _id: 1 } }
+    ]);
+    
+    const skills = skillsAgg.map(item => item._id).filter(skill => skill && skill.trim());
+    
+    res.status(httpStatus.ok).json({
+      success: true,
+      message: "Available skills retrieved successfully",
+      data: {
+        skills,
+        count: skills.length
+      }
+    });
+    
+  } catch (error) {
+    console.error("Error getting available skills:", error);
+    return next(error);
+  }
+};
+
+// Add skills to user profile (for guides to manage their skills)
+const addUserSkills = async (req, res, next) => {
+  try {
+    const userId = req.user._id;
+    const { skills } = req.body;
+    
+    if (!Array.isArray(skills)) {
+      return res.status(httpStatus.badRequest).json({
+        success: false,
+        message: "Skills must be an array"
+      });
+    }
+    
+    // Update user tags/skills in profile
+    const updatedUser = await UserModel.findByIdAndUpdate(
+      userId,
+      {
+        $addToSet: {
+          'profile.tags': { $each: skills }
+        }
+      },
+      { new: true }
+    );
+    
+    res.status(httpStatus.ok).json({
+      success: true,
+      message: "Skills added successfully",
+      data: {
+        skills: updatedUser.profile?.tags || []
+      }
+    });
+    
+  } catch (error) {
+    console.error("Error adding user skills:", error);
+    return next(error);
+  }
+};
+
+// Update user skills (replace existing)
+const updateUserSkills = async (req, res, next) => {
+  try {
+    const userId = req.user._id;
+    const { skills } = req.body;
+    
+    if (!Array.isArray(skills)) {
+      return res.status(httpStatus.badRequest).json({
+        success: false,
+        message: "Skills must be an array"
+      });
+    }
+    
+    // Update user tags/skills in profile
+    const updatedUser = await UserModel.findByIdAndUpdate(
+      userId,
+      {
+        $set: {
+          'profile.tags': skills
+        }
+      },
+      { new: true }
+    );
+    
+    res.status(httpStatus.ok).json({
+      success: true,
+      message: "Skills updated successfully",
+      data: {
+        skills: updatedUser.profile?.tags || []
+      }
+    });
+    
+  } catch (error) {
+    console.error("Error updating user skills:", error);
+    return next(error);
+  }
+};
+
 module.exports = {
     uploadPhoto,
     getUser,
     updateUserProfile,
-    getUserProfile
+    getUserProfile,
+    getDashboardMetrics,
+    getAvailableSkills,
+    addUserSkills,
+    updateUserSkills
 };

@@ -31,6 +31,21 @@ const serviceSchema = new Schema(
       type: Boolean,
       default: false,
     },
+    skills: {
+      type: [String],
+      default: [],
+      description: "Skills that learners will gain from this service"
+    },
+    category: {
+      type: String,
+      trim: true,
+      description: "Main category/topic of the service"
+    },
+    skillLevel: {
+      type: String,
+      enum: ["Beginner", "Intermediate", "Advanced"],
+      default: "Beginner"
+    },
   },
   { timestamps: true }
 );

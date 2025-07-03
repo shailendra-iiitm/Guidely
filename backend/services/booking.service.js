@@ -267,6 +267,23 @@ const updateBookingStatuses = async () => {
     }
     console.log("Updated in-progress to completed:", inProgressCompletedCount);
     
+    // Update user metrics for newly completed sessions
+    if (inProgressCompletedCount > 0) {
+      const dashboardMetricsService = require('./dashboardMetrics.service');
+      for (const booking of inProgressBookings) {
+        const sessionDuration = booking.service?.duration || 60;
+        const expectedEndTime = new Date(booking.sessionStartedAt.getTime() + sessionDuration * 60000);
+        
+        if (now > expectedEndTime) {
+          try {
+            await dashboardMetricsService.updateUserMetricsAfterBooking(booking._id);
+          } catch (error) {
+            console.error('Error updating metrics for booking:', booking._id, error);
+          }
+        }
+      }
+    }
+    
     // Update confirmed bookings that have passed to 'completed' (if no explicit completion)
     const completedResult = await BookingModel.updateMany(
       { 
@@ -280,6 +297,23 @@ const updateBookingStatuses = async () => {
       }
     );
     console.log("Updated past confirmed to completed:", completedResult.modifiedCount);
+    
+    // Update user metrics for newly completed bookings
+    if (completedResult.modifiedCount > 0) {
+      const dashboardMetricsService = require('./dashboardMetrics.service');
+      const newlyCompletedBookings = await BookingModel.find({
+        status: 'completed',
+        updatedAt: { $gte: new Date(Date.now() - 5000) } // Updated in last 5 seconds
+      });
+      
+      for (const booking of newlyCompletedBookings) {
+        try {
+          await dashboardMetricsService.updateUserMetricsAfterBooking(booking._id);
+        } catch (error) {
+          console.error('Error updating metrics for booking:', booking._id, error);
+        }
+      }
+    }
     
     // Update payment records for newly completed bookings
     if (completedResult.modifiedCount > 0) {

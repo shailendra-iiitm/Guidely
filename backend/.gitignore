@@ -4,4 +4,4 @@ node_modules
 .env.local
 .env.development
 uploads
-scripts/
+pqrst/

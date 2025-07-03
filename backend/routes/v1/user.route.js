@@ -41,4 +41,32 @@ router.get(
   asyncHandler(userController.getUserProfile)
 );
 
+// Get dashboard metrics for current user
+router.get(
+  "/dashboard-metrics",
+  authMiddleware.protect,
+  asyncHandler(userController.getDashboardMetrics)
+);
+
+// Get all available skills
+router.get(
+  "/skills",
+  authMiddleware.protect,
+  asyncHandler(userController.getAvailableSkills)
+);
+
+// Add skills to user profile
+router.post(
+  "/skills",
+  authMiddleware.protect,
+  asyncHandler(userController.addUserSkills)
+);
+
+// Update user skills
+router.put(
+  "/skills",
+  authMiddleware.protect,
+  asyncHandler(userController.updateUserSkills)
+);
+
 module.exports = router;
