@@ -18,9 +18,41 @@ const userSchema = new Schema(
             verified: { type: Boolean, default: false },
             role: {
                 type: String,
-                enum: ["guide", "learner"],
+                enum: ["guide", "learner", "admin"],
                 default: null, //will be set upon registration
             },
+            // Guide verification fields
+            guideVerification: {
+                status: {
+                    type: String,
+                    enum: ["pending", "approved", "rejected"],
+                    default: "pending"
+                },
+                documents: {
+                    identity: {
+                        url: { type: String, default: "" },
+                        publicId: { type: String, default: "" },
+                        uploadedAt: { type: Date }
+                    },
+                    qualification: {
+                        url: { type: String, default: "" },
+                        publicId: { type: String, default: "" },
+                        uploadedAt: { type: Date }
+                    },
+                    experience: {
+                        url: { type: String, default: "" },
+                        publicId: { type: String, default: "" },
+                        uploadedAt: { type: Date }
+                    }
+                },
+                submittedAt: { type: Date },
+                reviewedAt: { type: Date },
+                reviewedBy: { type: Schema.Types.ObjectId, ref: 'User' },
+                reviewComments: { type: String, default: "" }
+            },
+            // Password reset fields
+            resetPasswordOtp: { type: String, select: false },
+            resetPasswordExpiry: { type: Date, select: false },
             profile:{
                 tags: { type: [String], default: [] }, //tags for search
                 title: { type: String, default: "" }, //title for guides
@@ -84,7 +116,7 @@ userSchema.pre('save', async function (next){
     next();
 });
 
-userSchema.index({email: 1});
+// Email index is already handled by unique: true in schema definition
 
 // Export the User model
 const UserModel = model('User', userSchema);

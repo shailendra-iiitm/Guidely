@@ -19,6 +19,12 @@ import LearnerDashboardHome from "../page/dashboard/LearnerDashboardHome.jsx";
 import GuideDashboardHome from "../page/dashboard/GuideDashboardHome.jsx";
 import DashboardHome from "../page/dashboard/DashboardHome.jsx";
 import ErrorBoundary from "../components/ErrorBoundary.jsx";
+import ForgotPassword from "../page/forgotPassword.jsx";
+import AdminDashboardHome from "../page/dashboard/AdminDashboardHome.jsx";
+import GuideVerifications from "../page/dashboard/GuideVerifications.jsx";
+import UserManagement from "../page/dashboard/UserManagement.jsx";
+import GuideVerification from "../page/dashboard/GuideVerification.jsx";
+import DetailedStats from "../page/dashboard/DetailedStats.jsx";
 
 const routes = [
   {
@@ -34,6 +40,11 @@ const routes = [
   {
     path: "/signin",
     element: <SignIn />,
+    isProtected: false,
+  },
+  {
+    path: "/forgot-password",
+    element: <ForgotPassword />,
     isProtected: false,
   },
 
@@ -135,6 +146,43 @@ const routes = [
     element: (
       <DashboardSelector>
         <LearningProgress />
+      </DashboardSelector>
+    ),
+    isProtected: true,
+  },
+  // Admin Routes
+  {
+    path: "/dashboard/admin",
+    element: (
+      <DashboardSelector>
+        <AdminDashboardHome />
+      </DashboardSelector>
+    ),
+    isProtected: true,
+  },
+  {
+    path: "/dashboard/guide-verifications",
+    element: (
+      <DashboardSelector>
+        <GuideVerification />
+      </DashboardSelector>
+    ),
+    isProtected: true,
+  },
+  {
+    path: "/dashboard/users",
+    element: (
+      <DashboardSelector>
+        <UserManagement />
+      </DashboardSelector>
+    ),
+    isProtected: true,
+  },
+  {
+    path: "/dashboard/stats",
+    element: (
+      <DashboardSelector>
+        <DetailedStats />
       </DashboardSelector>
     ),
     isProtected: true,

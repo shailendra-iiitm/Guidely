@@ -66,7 +66,35 @@ const restrictTo = (...roles) => {
   };
 };
 
+// Middleware: Admin only access
+const adminOnly = (req, res, next) => {
+  if (req.user.role !== 'admin') {
+    return next(
+      new ApiError(
+        httpStatus.forbidden,
+        "Access denied. Admin privileges required."
+      )
+    );
+  }
+  next();
+};
+
+// Middleware: Guide only access
+const guideOnly = (req, res, next) => {
+  if (req.user.role !== 'guide') {
+    return next(
+      new ApiError(
+        httpStatus.forbidden,
+        "Access denied. Guide account required."
+      )
+    );
+  }
+  next();
+};
+
 module.exports = {
   protect,
   restrictTo,
+  adminOnly,
+  guideOnly,
 };

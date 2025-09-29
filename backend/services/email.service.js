@@ -35,6 +35,19 @@ const sendConfirmationMail = async (to, name, meetingLink, date, time) => {
   return sendEmail(to, subject, data);
 };
 
+const sendPasswordResetOtp = async (to, name, otp) => {
+  const subject = "Password Reset OTP - Guidely";
+
+  const template = path.join(__dirname, "../template/password-reset-otp.ejs");
+  const html = await ejs.renderFile(template, {
+    name,
+    otp,
+  });
+
+  return sendEmail(to, subject, html);
+};
+
 module.exports = {
   sendConfirmationMail,
+  sendPasswordResetOtp,
 };

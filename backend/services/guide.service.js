@@ -5,7 +5,11 @@ const UserModel = require("../models/user.model");
 const BookingModel = require("../models/booking.model");
 
 const getAllGuides = async () => {
-  const guides = await UserModel.find({ role: "guide" }).lean();
+  const guides = await UserModel.find({ 
+    role: "guide", 
+    verified: true,
+    "guideVerification.status": "approved"
+  }).lean();
   
   // Calculate real metrics for each guide
   const guidesWithMetrics = await Promise.all(
@@ -46,14 +50,24 @@ const getAllGuides = async () => {
 };
 
 const getGuideById = async (id) => {
-  const guide = await UserModel.findOne({ _id: id, role: "guide" }).lean();
+  const guide = await UserModel.findOne({ 
+    _id: id, 
+    role: "guide",
+    verified: true,
+    "guideVerification.status": "approved"
+  }).lean();
   if (!guide) return null;
   
   return await enrichGuideWithMetrics(guide);
 };
 
 const getGuideByUsername = async (username) => {
-  const guide = await UserModel.findOne({ username, role: "guide" }).lean();
+  const guide = await UserModel.findOne({ 
+    username, 
+    role: "guide",
+    verified: true,
+    "guideVerification.status": "approved"
+  }).lean();
   if (!guide) return null;
   
   return await enrichGuideWithMetrics(guide);

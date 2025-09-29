@@ -13,6 +13,8 @@ const guideRoute = require("./guide.route");
 const learningProgressRoute = require("./learningProgress.route");
 const paymentRoute = require("./payment.route");
 const feedbackRoute = require("./feedback.route");
+const guideVerificationRoute = require("./guideVerification.route");
+const adminRoute = require("./admin.route");
 
 
 const Routes = [
@@ -59,6 +61,14 @@ const Routes = [
   {
     path: "/webhook",
     route: webhookRoute,
+  },
+  {
+    path: "/guide-verification",
+    route: guideVerificationRoute,
+  },
+  {
+    path: "/admin",
+    route: adminRoute,
   },
 ];
 
