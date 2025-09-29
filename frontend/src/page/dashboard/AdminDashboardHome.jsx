@@ -14,7 +14,17 @@ const AdminDashboardHome = () => {
     try {
       setIsLoading(true);
       const response = await adminManagement.getDetailedStats({ period: '30d' });
-      setStats(response.data);
+      console.log('Dashboard stats response:', response.data);
+      
+      // Handle different response structures
+      if (response.data.data && response.data.data.stats) {
+        setStats(response.data.data.stats);
+      } else if (response.data.stats) {
+        setStats(response.data.stats);
+      } else {
+        console.error('Unexpected response structure:', response.data);
+        setStats(null);
+      }
     } catch (error) {
       console.error("Error fetching admin dashboard:", error);
       toast.error("Failed to load dashboard statistics");
@@ -26,43 +36,57 @@ const AdminDashboardHome = () => {
   const statCards = [
     {
       title: "Total Users",
-      value: stats?.overview?.totalUsers || 0,
+      value: stats?.users?.total || 0,
       icon: "👥",
       color: "bg-blue-500",
       textColor: "text-blue-600",
       bgColor: "bg-blue-50",
+      subtitle: `+${stats?.users?.newLast30Days || 0} this month`
     },
     {
-      title: "Active Guides",
-      value: stats?.overview?.activeGuides || 0,
+      title: "Total Guides",
+      value: stats?.guides?.total || 0,
       icon: "🎓",
       color: "bg-green-500",
       textColor: "text-green-600",
       bgColor: "bg-green-50",
+      subtitle: `${stats?.guides?.approvalRate || 0}% approved`
     },
     {
       title: "Total Bookings",
-      value: stats?.overview?.totalBookings || 0,
+      value: stats?.bookings?.total || 0,
       icon: "📚",
       color: "bg-purple-500",
       textColor: "text-purple-600",
       bgColor: "bg-purple-50",
+      subtitle: `${stats?.bookings?.completionRate || 0}% completed`
     },
     {
       title: "Verified Guides",
-      value: stats?.verifiedGuides || 0,
+      value: stats?.guides?.verified || 0,
       icon: "✅",
       color: "bg-emerald-500",
       textColor: "text-emerald-600",
       bgColor: "bg-emerald-50",
+      subtitle: "Active mentors"
     },
     {
       title: "Pending Verifications",
-      value: stats?.pendingVerifications || 0,
+      value: stats?.guides?.pending || 0,
       icon: "⏳",
       color: "bg-orange-500",
       textColor: "text-orange-600",
       bgColor: "bg-orange-50",
+      subtitle: "Awaiting review"
+    },
+    {
+      title: "Support Tickets",
+      value: stats?.supportTickets?.total || 0,
+      icon: "🎫",
+      color: "bg-indigo-500",
+      textColor: "text-indigo-600",
+      bgColor: "bg-indigo-50",
+      subtitle: `${stats?.supportTickets?.open || 0} open`
     },
   ];
 
@@ -99,8 +123,13 @@ const AdminDashboardHome = () => {
                   {card.title}
                 </p>
                 <p className={`text-2xl font-bold ${card.textColor}`}>
-                  {card.value}
+                  {card.value.toLocaleString()}
                 </p>
+                {card.subtitle && (
+                  <p className="text-xs text-gray-500 mt-1">
+                    {card.subtitle}
+                  </p>
+                )}
               </div>
               <div className={`${card.color} w-12 h-12 rounded-lg flex items-center justify-center`}>
                 <span className="text-white text-xl">{card.icon}</span>

@@ -1,5 +1,6 @@
 const UserModel = require("../models/user.model");
 const BookingModel = require("../models/booking.model");
+const SupportTicket = require("../models/supportTicket.model");
 const httpStatus = require("../util/httpStatus");
 
 const getAllUsers = async (req, res) => {
@@ -142,11 +143,13 @@ const deleteUser = async (req, res) => {
 
 const getDetailedStats = async (req, res) => {
   try {
+    console.log('Starting getDetailedStats...');
     const now = new Date();
     const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
     const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
 
     // User growth statistics
+    console.log('Fetching user statistics...');
     const totalUsers = await UserModel.countDocuments();
     const newUsersLast30Days = await UserModel.countDocuments({
       createdAt: { $gte: thirtyDaysAgo }
@@ -154,27 +157,44 @@ const getDetailedStats = async (req, res) => {
     const newUsersLast7Days = await UserModel.countDocuments({
       createdAt: { $gte: sevenDaysAgo }
     });
+    console.log(`Users: total=${totalUsers}, new30d=${newUsersLast30Days}, new7d=${newUsersLast7Days}`);
 
-    // Guide statistics
+    // Guide statistics - fixed to handle missing verification fields
+    console.log('Fetching guide statistics...');
     const totalGuides = await UserModel.countDocuments({ role: 'guide' });
-    const verifiedGuides = await UserModel.countDocuments({ 
+    
+    // Count guides with verified field set to true (simple verification)
+    const simpleVerifiedGuides = await UserModel.countDocuments({ 
       role: 'guide', 
-      verified: true,
+      verified: true
+    });
+    
+    // Count guides with guideVerification.status = 'approved' (detailed verification)
+    const detailedVerifiedGuides = await UserModel.countDocuments({
+      role: 'guide',
       'guideVerification.status': 'approved'
     });
+    
+    // Use the higher of the two counts
+    const verifiedGuides = Math.max(simpleVerifiedGuides, detailedVerifiedGuides);
+    
     const pendingGuides = await UserModel.countDocuments({
       role: 'guide',
       'guideVerification.status': 'pending'
     });
+    console.log(`Guides: total=${totalGuides}, verified=${verifiedGuides}, pending=${pendingGuides}`);
 
     // Booking statistics
+    console.log('Fetching booking statistics...');
     const totalBookings = await BookingModel.countDocuments();
     const completedBookings = await BookingModel.countDocuments({ status: 'completed' });
     const activeBookings = await BookingModel.countDocuments({ 
       status: { $in: ['confirmed', 'upcoming', 'in-progress'] }
     });
+    console.log(`Bookings: total=${totalBookings}, completed=${completedBookings}, active=${activeBookings}`);
 
     // Recent activity (last 7 days)
+    console.log('Fetching recent activity...');
     const recentUsers = await UserModel.find({
       createdAt: { $gte: sevenDaysAgo }
     }).select('name email role createdAt').sort({ createdAt: -1 }).limit(10);
@@ -186,37 +206,66 @@ const getDetailedStats = async (req, res) => {
     .populate('user', 'name')
     .sort({ createdAt: -1 })
     .limit(10);
+    console.log(`Recent: ${recentUsers.length} users, ${recentBookings.length} bookings`);
 
+    // Support ticket statistics
+    console.log('Fetching support ticket statistics...');
+    const totalTickets = await SupportTicket.countDocuments();
+    const openTickets = await SupportTicket.countDocuments({ status: 'open' });
+    const inProgressTickets = await SupportTicket.countDocuments({ status: 'in-progress' });
+    const resolvedTickets = await SupportTicket.countDocuments({ status: 'resolved' });
+    const closedTickets = await SupportTicket.countDocuments({ status: 'closed' });
+    console.log(`Tickets: total=${totalTickets}, open=${openTickets}, in-progress=${inProgressTickets}, resolved=${resolvedTickets}, closed=${closedTickets}`);
+
+    const statsData = {
+      users: {
+        total: totalUsers,
+        newLast30Days: newUsersLast30Days,
+        newLast7Days: newUsersLast7Days,
+        growthRate: totalUsers > 0 ? ((newUsersLast30Days / totalUsers) * 100).toFixed(1) : 0
+      },
+      guides: {
+        total: totalGuides,
+        verified: verifiedGuides,
+        pending: pendingGuides,
+        approvalRate: totalGuides > 0 ? ((verifiedGuides / totalGuides) * 100).toFixed(1) : 0
+      },
+      bookings: {
+        total: totalBookings,
+        completed: completedBookings,
+        active: activeBookings,
+        completionRate: totalBookings > 0 ? ((completedBookings / totalBookings) * 100).toFixed(1) : 0
+      },
+      supportTickets: {
+        total: totalTickets,
+        open: openTickets,
+        inProgress: inProgressTickets,
+        resolved: resolvedTickets,
+        closed: closedTickets,
+        resolutionRate: totalTickets > 0 ? (((resolvedTickets + closedTickets) / totalTickets) * 100).toFixed(1) : 0
+      },
+      recentActivity: {
+        users: recentUsers,
+        bookings: recentBookings
+      }
+    };
+    
+    console.log('Sending stats data:', JSON.stringify(statsData, null, 2));
+    
     res.status(httpStatus.ok).json({
+      success: true,
       message: "Detailed statistics retrieved successfully",
-      stats: {
-        users: {
-          total: totalUsers,
-          newLast30Days: newUsersLast30Days,
-          newLast7Days: newUsersLast7Days,
-          growthRate: totalUsers > 0 ? ((newUsersLast30Days / totalUsers) * 100).toFixed(1) : 0
-        },
-        guides: {
-          total: totalGuides,
-          verified: verifiedGuides,
-          pending: pendingGuides,
-          approvalRate: totalGuides > 0 ? ((verifiedGuides / totalGuides) * 100).toFixed(1) : 0
-        },
-        bookings: {
-          total: totalBookings,
-          completed: completedBookings,
-          active: activeBookings,
-          completionRate: totalBookings > 0 ? ((completedBookings / totalBookings) * 100).toFixed(1) : 0
-        },
-        recentActivity: {
-          users: recentUsers,
-          bookings: recentBookings
-        }
+      data: {
+        stats: statsData
       }
     });
   } catch (error) {
     console.error("Get detailed stats error:", error);
-    throw error;
+    res.status(httpStatus.internalServerError).json({
+      success: false,
+      message: "Failed to retrieve statistics",
+      error: error.message
+    });
   }
 };
 

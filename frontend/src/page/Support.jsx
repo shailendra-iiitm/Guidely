@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import supportTickets from "../apiManger/supportTickets";
 import toast from "react-hot-toast";
+
 const Support = () => {
   const [activeTab, setActiveTab] = useState('submit');
   const [myTickets, setMyTickets] = useState([]);
@@ -83,10 +84,10 @@ const Support = () => {
         <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
           <div className="text-center">
             <h1 className="text-3xl font-bold text-gray-900 mb-2">
-              🎧 Support Center
+              🎧 Guidely Support Center
             </h1>
             <p className="text-gray-600">
-              Need help? We're here to assist you. Submit a ticket or check your existing requests.
+              Need help with mentoring, bookings, or platform features? Our support team is here to guide you through any issues.
             </p>
           </div>
 
@@ -139,8 +140,10 @@ const Support = () => {
                     <option value="general">General Inquiry</option>
                     <option value="technical">Technical Issue</option>
                     <option value="billing">Billing & Payments</option>
-                    <option value="booking">Booking Support</option>
-                    <option value="account">Account Issues</option>
+                    <option value="booking">Booking & Scheduling</option>
+                    <option value="account">Account & Profile</option>
+                    <option value="mentoring">Mentoring Sessions</option>
+                    <option value="verification">Guide Verification</option>
                     <option value="other">Other</option>
                   </select>
                 </div>
@@ -186,7 +189,7 @@ const Support = () => {
                   name="description"
                   value={formData.description}
                   onChange={handleInputChange}
-                  placeholder="Please provide detailed information about your issue..."
+                  placeholder="Please describe your issue in detail. Include any error messages, steps you took, or specific features you need help with..."
                   rows={6}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   required
@@ -285,23 +288,132 @@ const Support = () => {
           </div>
         )}
 
-        {/* Contact Info */}
-        <div className="mt-8 bg-blue-50 rounded-lg p-6">
-          <div className="text-center">
-            <h3 className="text-lg font-semibold text-blue-900 mb-2">
-              Need immediate assistance?
-            </h3>
-            <p className="text-blue-700 mb-4">
-              For urgent issues, you can also reach out to us directly.
-            </p>
-            <div className="flex justify-center space-x-6 text-sm">
-              <div className="flex items-center">
-                <span className="mr-2">📧</span>
-                <span>support@guidely.com</span>
+        {/* Help & Support Information */}
+        <div className="mt-8 space-y-6">
+          {/* Quick Help Resources */}
+          <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-6">
+            <div className="text-center mb-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                🚀 Quick Help Resources
+              </h3>
+              <p className="text-gray-600">
+                Before submitting a ticket, check out these helpful resources
+              </p>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+              <div className="bg-white rounded-lg p-4 text-center hover:shadow-md transition-shadow cursor-pointer">
+                <div className="text-2xl mb-2">📚</div>
+                <h4 className="font-medium text-gray-900 mb-1">User Guide</h4>
+                <p className="text-xs text-gray-600">Learn platform features</p>
               </div>
-              <div className="flex items-center">
-                <span className="mr-2">📞</span>
-                <span>+1 (555) 123-4567</span>
+              <div className="bg-white rounded-lg p-4 text-center hover:shadow-md transition-shadow cursor-pointer">
+                <div className="text-2xl mb-2">🎓</div>
+                <h4 className="font-medium text-gray-900 mb-1">Mentor Guide</h4>
+                <p className="text-xs text-gray-600">Guide verification help</p>
+              </div>
+              <div className="bg-white rounded-lg p-4 text-center hover:shadow-md transition-shadow cursor-pointer">
+                <div className="text-2xl mb-2">💡</div>
+                <h4 className="font-medium text-gray-900 mb-1">FAQ</h4>
+                <p className="text-xs text-gray-600">Common questions</p>
+              </div>
+              <div className="bg-white rounded-lg p-4 text-center hover:shadow-md transition-shadow cursor-pointer">
+                <div className="text-2xl mb-2">🎥</div>
+                <h4 className="font-medium text-gray-900 mb-1">Tutorials</h4>
+                <p className="text-xs text-gray-600">Step-by-step guides</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Support Ticket Process */}
+          <div className="bg-white rounded-lg shadow-sm p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              📋 How Our Support System Works
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <div className="text-center">
+                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <span className="text-blue-600 font-bold">1</span>
+                </div>
+                <h4 className="font-medium text-gray-900 mb-2">Submit Ticket</h4>
+                <p className="text-sm text-gray-600">Describe your issue with details</p>
+              </div>
+              <div className="text-center">
+                <div className="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <span className="text-yellow-600 font-bold">2</span>
+                </div>
+                <h4 className="font-medium text-gray-900 mb-2">Admin Review</h4>
+                <p className="text-sm text-gray-600">Our team reviews your request</p>
+              </div>
+              <div className="text-center">
+                <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <span className="text-purple-600 font-bold">3</span>
+                </div>
+                <h4 className="font-medium text-gray-900 mb-2">Get Response</h4>
+                <p className="text-sm text-gray-600">Receive help from our experts</p>
+              </div>
+              <div className="text-center">
+                <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <span className="text-green-600 font-bold">4</span>
+                </div>
+                <h4 className="font-medium text-gray-900 mb-2">Resolution</h4>
+                <p className="text-sm text-gray-600">Issue resolved & ticket closed</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Contact & Response Times */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="bg-gradient-to-br from-green-50 to-blue-50 rounded-lg p-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                ⏰ Response Times
+              </h3>
+              <div className="space-y-3">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-600">🔴 Urgent Issues</span>
+                  <span className="font-medium text-red-600">2-4 hours</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-600">🟡 High Priority</span>
+                  <span className="font-medium text-orange-600">4-8 hours</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-600">🟢 Normal</span>
+                  <span className="font-medium text-green-600">24-48 hours</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-600">🔵 Low Priority</span>
+                  <span className="font-medium text-blue-600">2-3 days</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-lg p-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                📞 Additional Support
+              </h3>
+              <div className="space-y-4">
+                <div className="flex items-center space-x-3">
+                  <span className="text-2xl">📧</span>
+                  <div>
+                    <p className="font-medium text-gray-900">Email Support</p>
+                    <p className="text-sm text-gray-600">support@guidely.com</p>
+                  </div>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <span className="text-2xl">💬</span>
+                  <div>
+                    <p className="font-medium text-gray-900">Live Chat</p>
+                    <p className="text-sm text-gray-600">Available on homepage</p>
+                  </div>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <span className="text-2xl">🎫</span>
+                  <div>
+                    <p className="font-medium text-gray-900">Ticket System</p>
+                    <p className="text-sm text-gray-600">Managed by admin panel</p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
