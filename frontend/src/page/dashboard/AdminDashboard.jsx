@@ -23,14 +23,19 @@ const AdminDashboard = ({ children }) => {
       icon: "📊",
     },
     {
+      name: "User Management",
+      path: "/dashboard/users",
+      icon: "👥",
+    },
+    {
       name: "Guide Verifications",
       path: "/dashboard/guide-verifications",
       icon: "✅",
     },
     {
-      name: "User Management",
-      path: "/dashboard/users",
-      icon: "👥",
+      name: "Support Tickets",
+      path: "/dashboard/support-tickets",
+      icon: "🎫",
     },
     {
       name: "System Stats",

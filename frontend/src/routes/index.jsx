@@ -25,6 +25,8 @@ import GuideVerifications from "../page/dashboard/GuideVerifications.jsx";
 import UserManagement from "../page/dashboard/UserManagement.jsx";
 import GuideVerification from "../page/dashboard/GuideVerification.jsx";
 import DetailedStats from "../page/dashboard/DetailedStats.jsx";
+import SupportTicketManagement from "../page/dashboard/SupportTicketManagement.jsx";
+import Support from "../page/Support.jsx";
 
 const routes = [
   {
@@ -185,6 +187,20 @@ const routes = [
         <DetailedStats />
       </DashboardSelector>
     ),
+    isProtected: true,
+  },
+  {
+    path: "/dashboard/support-tickets",
+    element: (
+      <DashboardSelector>
+        <SupportTicketManagement />
+      </DashboardSelector>
+    ),
+    isProtected: true,
+  },
+  {
+    path: "/support",
+    element: <Support />,
     isProtected: true,
   },
 ];

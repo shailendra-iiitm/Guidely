@@ -12,7 +12,7 @@ export const checkServerHealth = async (baseUrl) => {
 };
 
 export const getAvailableEndpoint = async () => {
-  const LOCAL_URL = "http://localhost:8080/api/v1";
+  const LOCAL_URL = "http://localhost:9000/api/v1";
   const DEPLOYED_URL = "https://guidely-backend.onrender.com/api/v1";
   
   // If on localhost, prefer local server

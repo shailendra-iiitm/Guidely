@@ -74,6 +74,23 @@ const UserManagement = () => {
     }
   };
 
+  const handleBlockUnblock = async (userId, isBlocked) => {
+    try {
+      setIsUpdating(true);
+      await adminManagement.updateUserStatus(userId, { 
+        isBlocked: !isBlocked 
+      });
+      toast.success(`User ${!isBlocked ? 'blocked' : 'unblocked'} successfully`);
+      fetchUsers();
+      closeUserModal();
+    } catch (error) {
+      console.error("Error updating user block status:", error);
+      toast.error("Failed to update user block status");
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
   const handleDeleteUser = async (userId) => {
     if (!window.confirm("Are you sure you want to delete this user? This action cannot be undone.")) {
       return;
@@ -243,11 +260,16 @@ const UserManagement = () => {
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(user.verified)}`}>
-                          {user.verified ? 'Verified' : 'Unverified'}
-                        </span>
-                        {user.role === 'guide' && user.guideVerification && (
-                          <div className="mt-1">
+                        <div className="flex flex-col space-y-1">
+                          <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(user.verified)}`}>
+                            {user.verified ? 'Verified' : 'Unverified'}
+                          </span>
+                          {user.isBlocked && (
+                            <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">
+                              Blocked
+                            </span>
+                          )}
+                          {user.role === 'guide' && user.guideVerification && (
                             <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
                               user.guideVerification.status === 'approved' ? 'bg-emerald-100 text-emerald-800' :
                               user.guideVerification.status === 'rejected' ? 'bg-red-100 text-red-800' :
@@ -255,8 +277,8 @@ const UserManagement = () => {
                             }`}>
                               Guide: {user.guideVerification.status}
                             </span>
-                          </div>
-                        )}
+                          )}
+                        </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         {new Date(user.createdAt).toLocaleDateString()}
@@ -435,19 +457,37 @@ const UserManagement = () => {
 
               {/* Actions */}
               <div className="flex justify-end space-x-3 pt-4 border-t">
-                <button
-                  onClick={() => handleStatusUpdate(selectedUser.user?._id, { 
-                    verified: !selectedUser.user?.verified 
-                  })}
-                  disabled={isUpdating}
-                  className={`px-4 py-2 rounded-lg text-white transition-colors disabled:opacity-50 ${
-                    selectedUser.user?.verified 
-                      ? 'bg-yellow-500 hover:bg-yellow-600' 
-                      : 'bg-green-500 hover:bg-green-600'
-                  }`}
-                >
-                  {isUpdating ? 'Updating...' : (selectedUser.user?.verified ? 'Unverify' : 'Verify')}
-                </button>
+                {/* Verification only for guides */}
+                {selectedUser.user?.role === 'guide' && (
+                  <button
+                    onClick={() => handleStatusUpdate(selectedUser.user?._id, { 
+                      verified: !selectedUser.user?.verified 
+                    })}
+                    disabled={isUpdating}
+                    className={`px-4 py-2 rounded-lg text-white transition-colors disabled:opacity-50 ${
+                      selectedUser.user?.verified 
+                        ? 'bg-yellow-500 hover:bg-yellow-600' 
+                        : 'bg-green-500 hover:bg-green-600'
+                    }`}
+                  >
+                    {isUpdating ? 'Updating...' : (selectedUser.user?.verified ? 'Unverify' : 'Verify')}
+                  </button>
+                )}
+                
+                {/* Block/Unblock for all non-admin users */}
+                {selectedUser.user?.role !== 'admin' && (
+                  <button
+                    onClick={() => handleBlockUnblock(selectedUser.user?._id, selectedUser.user?.isBlocked)}
+                    disabled={isUpdating}
+                    className={`px-4 py-2 rounded-lg text-white transition-colors disabled:opacity-50 ${
+                      selectedUser.user?.isBlocked 
+                        ? 'bg-green-500 hover:bg-green-600' 
+                        : 'bg-orange-500 hover:bg-orange-600'
+                    }`}
+                  >
+                    {isUpdating ? 'Updating...' : (selectedUser.user?.isBlocked ? 'Unblock' : 'Block')}
+                  </button>
+                )}
                 
                 {selectedUser.user?.role !== 'admin' && (
                   <button

@@ -22,9 +22,13 @@ const GuideVerification = () => {
         ...filters,
         role: 'guide'
       });
-      setGuides(response.data.users.filter(user => 
-        user.guideVerification && user.guideVerification.status === filters.status
-      ));
+      // Only show guides who have submitted verification (have guideVerification object)
+      const guidesWithVerification = response.data.users.filter(user => 
+        user.role === 'guide' && 
+        user.guideVerification && 
+        user.guideVerification.status === filters.status
+      );
+      setGuides(guidesWithVerification);
       setPagination(response.data.pagination);
     } catch (error) {
       console.error("Error fetching guides:", error);

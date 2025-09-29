@@ -26,23 +26,23 @@ const AdminDashboardHome = () => {
   const statCards = [
     {
       title: "Total Users",
-      value: stats?.totalUsers || 0,
+      value: stats?.overview?.totalUsers || 0,
       icon: "👥",
       color: "bg-blue-500",
       textColor: "text-blue-600",
       bgColor: "bg-blue-50",
     },
     {
-      title: "Total Guides",
-      value: stats?.totalGuides || 0,
+      title: "Active Guides",
+      value: stats?.overview?.activeGuides || 0,
       icon: "🎓",
       color: "bg-green-500",
       textColor: "text-green-600",
       bgColor: "bg-green-50",
     },
     {
-      title: "Total Learners",
-      value: stats?.totalLearners || 0,
+      title: "Total Bookings",
+      value: stats?.overview?.totalBookings || 0,
       icon: "📚",
       color: "bg-purple-500",
       textColor: "text-purple-600",

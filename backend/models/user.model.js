@@ -16,6 +16,7 @@ const userSchema = new Schema(
             email: { type: String, required: true, unique: true, trim: true },
             password: { type: String, required: true, select: false },
             verified: { type: Boolean, default: false },
+            isBlocked: { type: Boolean, default: false },
             role: {
                 type: String,
                 enum: ["guide", "learner", "admin"],

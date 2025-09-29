@@ -15,6 +15,7 @@ const paymentRoute = require("./payment.route");
 const feedbackRoute = require("./feedback.route");
 const guideVerificationRoute = require("./guideVerification.route");
 const adminRoute = require("./admin.route");
+// const supportTicketRoute = require("./supportTicket");
 
 
 const Routes = [
@@ -70,6 +71,10 @@ const Routes = [
     path: "/admin",
     route: adminRoute,
   },
+  // {
+  //   path: "/support-tickets",
+  //   route: supportTicketRoute,
+  // },
 ];
 
 Routes.forEach((route) => {
