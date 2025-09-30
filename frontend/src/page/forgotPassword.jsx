@@ -8,6 +8,7 @@ const ForgotPassword = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [step, setStep] = useState(1); // 1: email, 2: otp, 3: new password
   const [email, setEmail] = useState("");
+  const [verifiedOtp, setVerifiedOtp] = useState("");
 
   const {
     register,
@@ -38,6 +39,7 @@ const ForgotPassword = () => {
     try {
       setIsLoading(true);
       await auth.verifyResetOtp({ email, otp: data.otp });
+      setVerifiedOtp(data.otp); // Store the verified OTP
       setStep(3);
       toast.success("OTP verified successfully!");
       reset();
@@ -53,9 +55,17 @@ const ForgotPassword = () => {
   const handleResetPassword = handleSubmit(async (data) => {
     try {
       setIsLoading(true);
+      // Use final OTP if provided, otherwise use the verified OTP from step 2
+      const otpToUse = data.finalOtp || verifiedOtp;
+      
+      if (!otpToUse) {
+        toast.error("Please enter OTP or go back to verify OTP first.");
+        return;
+      }
+      
       await auth.resetPassword({ 
         email, 
-        otp: data.otp, 
+        otp: otpToUse,
         newPassword: data.newPassword 
       });
       toast.success("Password reset successfully! Please sign in with your new password.");
@@ -68,6 +78,22 @@ const ForgotPassword = () => {
       setIsLoading(false);
     }
   });
+
+  // Resend OTP functionality
+  const handleResendOtp = async () => {
+    try {
+      setIsLoading(true);
+      await auth.forgotPassword({ email });
+      setVerifiedOtp(""); // Clear any previously verified OTP
+      setStep(2); // Go back to OTP verification step
+      toast.success("New OTP sent to your email address!");
+    } catch (error) {
+      console.error("Resend OTP error:", error);
+      toast.error(error.response?.data?.message || "Failed to resend OTP. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="bg-white">
@@ -116,7 +142,7 @@ const ForgotPassword = () => {
               <p className="mt-3 text-gray-500">
                 {step === 1 && "Enter your email to receive an OTP"}
                 {step === 2 && "Enter the OTP sent to your email"}
-                {step === 3 && "Create your new password"}
+                {step === 3 && "Set your new password (re-enter OTP only if you requested a new one)"}
               </p>
             </div>
 
@@ -223,6 +249,14 @@ const ForgotPassword = () => {
                   <div className="mt-4">
                     <button
                       type="button"
+                      onClick={handleResendOtp}
+                      disabled={isLoading}
+                      className="w-full px-4 py-2 mb-2 text-green-600 border border-green-500 rounded-lg hover:bg-green-50 focus:outline-none disabled:opacity-50"
+                    >
+                      {isLoading ? "Sending..." : "Resend OTP"}
+                    </button>
+                    <button
+                      type="button"
                       onClick={() => setStep(1)}
                       className="w-full px-4 py-2 text-blue-500 border border-blue-500 rounded-lg hover:bg-blue-50 focus:outline-none"
                     >
@@ -235,27 +269,35 @@ const ForgotPassword = () => {
               {/* Step 3: New Password */}
               {step === 3 && (
                 <form onSubmit={handleResetPassword}>
-                  <div>
-                    <label htmlFor="otp" className="block mb-2 text-sm text-gray-600">
-                      Re-enter OTP
+                  <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg">
+                    <p className="text-sm text-green-700">
+                      ✅ OTP verified successfully for: {email}
+                    </p>
+                    <p className="text-xs text-gray-600 mt-1">
+                      If you requested a new OTP, please enter it below
+                    </p>
+                  </div>
+
+                  <div className="mb-4">
+                    <label htmlFor="finalOtp" className="block mb-2 text-sm text-gray-600">
+                      Confirm OTP (optional - leave blank to use verified OTP)
                     </label>
                     <input
                       type="text"
                       maxLength="6"
                       className={`block w-full px-4 py-2 mt-2 text-gray-700 placeholder-gray-400 bg-white border ${
-                        errors.otp ? "border-red-500" : "border-gray-200"
+                        errors.finalOtp ? "border-red-500" : "border-gray-200"
                       } rounded-lg focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40 text-center text-lg tracking-widest`}
                       placeholder="123456"
-                      {...register("otp", {
-                        required: "OTP is required",
+                      {...register("finalOtp", {
                         pattern: {
                           value: /^[0-9]{6}$/,
                           message: "OTP must be 6 digits",
                         },
                       })}
                     />
-                    {errors.otp && (
-                      <p className="text-sm text-red-500">{errors.otp.message}</p>
+                    {errors.finalOtp && (
+                      <p className="text-sm text-red-500">{errors.finalOtp.message}</p>
                     )}
                   </div>
 
@@ -315,7 +357,18 @@ const ForgotPassword = () => {
                   <div className="mt-4">
                     <button
                       type="button"
-                      onClick={() => setStep(2)}
+                      onClick={handleResendOtp}
+                      disabled={isLoading}
+                      className="w-full px-4 py-2 mb-2 text-green-600 border border-green-500 rounded-lg hover:bg-green-50 focus:outline-none disabled:opacity-50"
+                    >
+                      {isLoading ? "Sending..." : "Resend OTP"}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setStep(2);
+                        setVerifiedOtp(""); // Clear verified OTP when going back
+                      }}
                       className="w-full px-4 py-2 text-blue-500 border border-blue-500 rounded-lg hover:bg-blue-50 focus:outline-none"
                     >
                       Back to OTP

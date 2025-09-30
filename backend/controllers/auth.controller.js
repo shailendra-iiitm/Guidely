@@ -130,11 +130,8 @@ const resetPassword = async (req, res) => {
 
     console.log("Reset password request for email:", email);
 
-    // Verify OTP first
-    await userService.verifyPasswordResetOtp(email, otp);
-    
-    // Reset password
-    const user = await userService.resetPassword(email, newPassword);
+    // Reset password (this will verify OTP internally)
+    const user = await userService.resetPassword(email, otp, newPassword);
     user.password = undefined;
 
     console.log("Password reset successful");

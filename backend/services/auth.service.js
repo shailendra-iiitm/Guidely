@@ -99,9 +99,9 @@ const sendPasswordResetOtp = async (email) => {
   }
 };
 
-const verifyPasswordResetOtp = async (email, otp) => {
+const verifyPasswordResetOtp = async (email, otp, markAsUsed = false) => {
   try {
-    console.log("Verifying OTP for email:", email);
+    console.log("Verifying OTP for email:", email, "markAsUsed:", markAsUsed);
     
     const otpRecord = await OtpModel.findOne({
       email,
@@ -115,32 +115,35 @@ const verifyPasswordResetOtp = async (email, otp) => {
       throw new ApiError(httpStatus.badRequest, "Invalid or expired OTP");
     }
 
-    // Mark OTP as used
-    otpRecord.used = true;
-    await otpRecord.save();
+    // Only mark OTP as used if specifically requested (during password reset)
+    if (markAsUsed) {
+      otpRecord.used = true;
+      await otpRecord.save();
+      console.log("OTP marked as used for:", email);
+    }
 
     console.log("OTP verified successfully for:", email);
-    return true;
+    return otpRecord;
   } catch (error) {
     console.error("Error in verifyPasswordResetOtp:", error);
     throw error;
   }
 };
 
-const resetPassword = async (email, newPassword) => {
+const resetPassword = async (email, otp, newPassword) => {
   try {
     console.log("Resetting password for:", email);
+    
+    // Verify OTP and mark as used
+    await verifyPasswordResetOtp(email, otp, true);
     
     const user = await UserModel.findOne({ email });
     if (!user) {
       throw new ApiError(httpStatus.notFound, "User not found");
     }
 
-    // Hash the new password
-    const hashedPassword = await bcrypt.hash(newPassword, 8);
-    
-    // Update user password
-    user.password = hashedPassword;
+    // Set the new password (let the pre-save middleware handle hashing)
+    user.password = newPassword;
     await user.save();
 
     // Clean up used OTPs
