@@ -18,7 +18,7 @@ const getPaymentHistory = async (req, res, next) => {
       query = { user: userId };
     }
     // For guides, show payments they received
-    else if (userRole === "guide" || userRole === "mentor") {
+    else if (userRole === "guide") {
       query = { guide: userId };
     }
 
@@ -158,7 +158,7 @@ const getPaymentStats = async (req, res, next) => {
     let query = {};
     if (userRole === "learner" || userRole === "student") {
       query = { user: userId };
-    } else if (userRole === "guide" || userRole === "mentor") {
+    } else if (userRole === "guide") {
       query = { guide: userId };
     }
 

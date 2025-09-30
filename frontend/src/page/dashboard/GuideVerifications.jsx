@@ -37,10 +37,13 @@ const GuideVerifications = () => {
       await guideVerification.reviewVerification(guideId, reviewData);
       toast.success(`Guide verification ${reviewData.status} successfully!`);
       
-      // Remove the reviewed guide from the list
-      setPendingGuides(prev => prev.filter(guide => guide.id !== guideId));
+      // Remove the reviewed guide from the list and refresh
+      setPendingGuides(prev => prev.filter(guide => (guide.id || guide._id) !== guideId));
       setSelectedGuide(null);
       setReviewData({ status: "", comments: "" });
+      
+      // Refresh the pending verifications list to get updated data
+      await fetchPendingVerifications();
     } catch (error) {
       console.error("Error reviewing verification:", error);
       toast.error("Failed to review verification");

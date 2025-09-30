@@ -17,6 +17,32 @@ const signUp = async (req, res) => {
       role,
     });
 
+    // Send email notification when someone signs up as a guide
+    if (role === 'guide') {
+      try {
+        await emailService.sendEmail({
+          to: 'guidely.iiit@gmail.com',
+          subject: 'New Guide Registration - Guidely Platform',
+          html: `
+            <h2>New Guide Registration</h2>
+            <p>A new guide has registered on the Guidely platform:</p>
+            <ul>
+              <li><strong>Name:</strong> ${name}</li>
+              <li><strong>Email:</strong> ${email}</li>
+              <li><strong>Username:</strong> ${username}</li>
+              <li><strong>Registration Time:</strong> ${new Date().toLocaleString()}</li>
+            </ul>
+            <p>Please review their verification documents in the admin panel.</p>
+            <p>For urgent matters, contact: 7651967439</p>
+          `
+        });
+        console.log('Guide registration notification sent to admin');
+      } catch (emailError) {
+        console.error('Failed to send guide registration notification:', emailError);
+        // Don't fail the registration if email fails
+      }
+    }
+
     user.password = undefined;
 
     console.log("User created successfully:", user);

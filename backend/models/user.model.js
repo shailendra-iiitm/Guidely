@@ -15,7 +15,13 @@ const userSchema = new Schema(
             username: { type: String, required: true, unique: true, trim: true },
             email: { type: String, required: true, unique: true, trim: true },
             password: { type: String, required: true, select: false },
-            verified: { type: Boolean, default: false },
+            verified: { 
+                type: Boolean, 
+                default: function() {
+                    // Only guides need verification, learners and admins are verified by default
+                    return this.role !== 'guide';
+                }
+            },
             isBlocked: { type: Boolean, default: false },
             role: {
                 type: String,
@@ -41,6 +47,11 @@ const userSchema = new Schema(
                         uploadedAt: { type: Date }
                     },
                     experience: {
+                        url: { type: String, default: "" },
+                        publicId: { type: String, default: "" },
+                        uploadedAt: { type: Date }
+                    },
+                    consolidatedDocument: {
                         url: { type: String, default: "" },
                         publicId: { type: String, default: "" },
                         uploadedAt: { type: Date }

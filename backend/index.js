@@ -2,7 +2,7 @@ require('dotenv').config();
 const mongoose = require('mongoose');
 const app = require('./app');
 const bookingService = require('./services/booking.service');
-const PORT = process.env.PORT || 5173;
+const PORT = process.env.PORT || 9000;
 const MONGODB_URI = process.env.DB_URL || 'mongodb://localhost:27017/guidely';
 
 mongoose.connect(MONGODB_URI)

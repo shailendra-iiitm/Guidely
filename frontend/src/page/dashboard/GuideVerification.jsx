@@ -61,14 +61,21 @@ const GuideVerification = () => {
   const handleVerificationAction = async (guideId, status, comments = '') => {
     try {
       setIsProcessing(true);
-      await adminManagement.updateUserStatus(guideId, {
+      
+      // Update verification status and user verified status
+      const updateData = {
         'guideVerification.status': status,
         'guideVerification.reviewedAt': new Date(),
-        'guideVerification.reviewComments': comments
-      });
+        'guideVerification.reviewComments': comments,
+        'verified': status === 'approved' // Set verified to true only if approved
+      };
+      
+      await adminManagement.updateUserStatus(guideId, updateData);
       
       toast.success(`Guide ${status} successfully`);
-      fetchGuides();
+      
+      // Refresh the data immediately
+      await fetchGuides();
       closeGuideModal();
     } catch (error) {
       console.error("Error updating verification status:", error);
@@ -330,26 +337,67 @@ const GuideVerification = () => {
               {/* Documents */}
               <div className="space-y-4">
                 <h5 className="font-medium text-gray-800">Submitted Documents</h5>
-                {selectedGuide.guideVerification?.documents && selectedGuide.guideVerification.documents.length > 0 ? (
+                {selectedGuide.guideVerification?.documents ? (
                   <div className="space-y-3">
-                    {selectedGuide.guideVerification.documents.map((doc, index) => (
-                      <div key={index} className="border rounded-lg p-3">
+                    {/* Consolidated Document */}
+                    {selectedGuide.guideVerification.documents.consolidatedDocument?.url && (
+                      <div className="border-2 border-blue-200 rounded-lg p-4 bg-blue-50">
                         <div className="flex items-center justify-between">
                           <div>
-                            <p className="font-medium text-sm">{doc.type || 'Document'}</p>
-                            <p className="text-xs text-gray-500">{doc.filename || 'Unknown file'}</p>
+                            <p className="font-medium text-sm text-blue-900">📄 Consolidated Documents (Recommended)</p>
+                            <p className="text-xs text-blue-700">All documents in one PDF file</p>
+                            {selectedGuide.guideVerification.documents.consolidatedDocument.uploadedAt && (
+                              <p className="text-xs text-gray-500 mt-1">
+                                Uploaded: {new Date(selectedGuide.guideVerification.documents.consolidatedDocument.uploadedAt).toLocaleString()}
+                              </p>
+                            )}
                           </div>
                           <a
-                            href={doc.url}
+                            href={selectedGuide.guideVerification.documents.consolidatedDocument.url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="px-3 py-1 bg-blue-500 text-white text-xs rounded hover:bg-blue-600 transition-colors"
+                            className="px-4 py-2 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 transition-colors"
                           >
-                            View
+                            📖 View PDF
                           </a>
                         </div>
                       </div>
-                    ))}
+                    )}
+                    
+                    {/* Individual Documents */}
+                    {['identity', 'qualification', 'experience'].map((docType) => {
+                      const doc = selectedGuide.guideVerification.documents[docType];
+                      if (!doc?.url) return null;
+                      
+                      const docNames = {
+                        identity: '🆔 Identity Proof',
+                        qualification: '🎓 Educational Qualification',
+                        experience: '💼 Experience Certificate'
+                      };
+                      
+                      return (
+                        <div key={docType} className="border rounded-lg p-3">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <p className="font-medium text-sm">{docNames[docType]}</p>
+                              {doc.uploadedAt && (
+                                <p className="text-xs text-gray-500">
+                                  Uploaded: {new Date(doc.uploadedAt).toLocaleString()}
+                                </p>
+                              )}
+                            </div>
+                            <a
+                              href={doc.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="px-3 py-1 bg-gray-500 text-white text-xs rounded hover:bg-gray-600 transition-colors"
+                            >
+                              View
+                            </a>
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
                 ) : (
                   <p className="text-gray-500 text-sm">No documents submitted</p>

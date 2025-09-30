@@ -4,8 +4,7 @@ const supportTicketSchema = mongoose.Schema(
   {
     ticketId: {
       type: String,
-      unique: true,
-      required: true
+      unique: true
     },
     user: {
       type: mongoose.Schema.Types.ObjectId,

@@ -80,16 +80,16 @@ const reviewGuideVerification = async (adminId, guideId, status, comments = "") 
 
     const admin = await UserModel.findById(adminId);
     if (!admin || admin.role !== "admin") {
-      throw new ApiError(httpStatus.forbidden, "Only admins can review verifications");
+      throw new ApiError(403, "Only admins can review verifications");
     }
 
     const guide = await UserModel.findById(guideId);
     if (!guide) {
-      throw new ApiError(httpStatus.notFound, "Guide not found");
+      throw new ApiError(404, "Guide not found");
     }
 
     if (guide.role !== "guide") {
-      throw new ApiError(httpStatus.badRequest, "User is not a guide");
+      throw new ApiError(400, "User is not a guide");
     }
 
     // Update verification status

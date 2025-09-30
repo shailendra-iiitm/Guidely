@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { NavLink } from "react-router-dom";
 import supportTickets from "../apiManger/supportTickets";
 import toast from "react-hot-toast";
 
@@ -79,6 +80,28 @@ const Support = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
+      {/* Home Button */}
+      <div className="absolute top-4 left-4 z-10">
+        <NavLink
+          to="/"
+          className="flex items-center px-4 py-2 text-white bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg hover:from-purple-700 hover:to-blue-700 transition-colors duration-300 shadow-lg"
+        >
+          <svg
+            className="w-5 h-5 mr-2"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+            />
+          </svg>
+          Home
+        </NavLink>
+      </div>
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
@@ -87,7 +110,7 @@ const Support = () => {
               🎧 Guidely Support Center
             </h1>
             <p className="text-gray-600">
-              Need help with mentoring, bookings, or platform features? Our support team is here to guide you through any issues.
+              Need help with guiding, bookings, or platform features? Our support team is here to guide you through any issues.
             </p>
           </div>
 
@@ -142,7 +165,7 @@ const Support = () => {
                     <option value="billing">Billing & Payments</option>
                     <option value="booking">Booking & Scheduling</option>
                     <option value="account">Account & Profile</option>
-                    <option value="mentoring">Mentoring Sessions</option>
+                    <option value="guiding">Guiding Sessions</option>
                     <option value="verification">Guide Verification</option>
                     <option value="other">Other</option>
                   </select>
@@ -309,7 +332,7 @@ const Support = () => {
               </div>
               <div className="bg-white rounded-lg p-4 text-center hover:shadow-md transition-shadow cursor-pointer">
                 <div className="text-2xl mb-2">🎓</div>
-                <h4 className="font-medium text-gray-900 mb-1">Mentor Guide</h4>
+                <h4 className="font-medium text-gray-900 mb-1">Guide Help</h4>
                 <p className="text-xs text-gray-600">Guide verification help</p>
               </div>
               <div className="bg-white rounded-lg p-4 text-center hover:shadow-md transition-shadow cursor-pointer">

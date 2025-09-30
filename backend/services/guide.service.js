@@ -5,11 +5,12 @@ const UserModel = require("../models/user.model");
 const BookingModel = require("../models/booking.model");
 
 const getAllGuides = async () => {
+  console.log("Getting all guides from database...");
   const guides = await UserModel.find({ 
     role: "guide", 
-    verified: true,
-    "guideVerification.status": "approved"
+    verified: true
   }).lean();
+  console.log("Found guides in DB:", guides.length);
   
   // Calculate real metrics for each guide
   const guidesWithMetrics = await Promise.all(

@@ -1,4 +1,3 @@
-const httpStatus = require('http-status');
 const SupportTicket = require('../models/supportTicket.model');
 const User = require('../models/user.model');
 
@@ -25,14 +24,14 @@ const createTicket = async (req, res) => {
     await ticket.save();
     await ticket.populate('user', 'name email username');
 
-    res.status(httpStatus.CREATED).json({
+    res.status(201).json({
       success: true,
       message: 'Support ticket created successfully',
       data: ticket
     });
   } catch (error) {
     console.error('Error creating support ticket:', error);
-    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+    res.status(500).json({
       success: false,
       message: 'Failed to create support ticket',
       error: error.message
@@ -67,7 +66,7 @@ const getAllTickets = async (req, res) => {
 
     const total = await SupportTicket.countDocuments(filter);
 
-    res.status(httpStatus.OK).json({
+    res.status(200).json({
       success: true,
       data: {
         tickets,
@@ -78,7 +77,7 @@ const getAllTickets = async (req, res) => {
     });
   } catch (error) {
     console.error('Error fetching support tickets:', error);
-    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+    res.status(500).json({
       success: false,
       message: 'Failed to fetch support tickets',
       error: error.message
@@ -102,7 +101,7 @@ const getMyTickets = async (req, res) => {
 
     const total = await SupportTicket.countDocuments(filter);
 
-    res.status(httpStatus.OK).json({
+    res.status(200).json({
       success: true,
       data: {
         tickets,
@@ -113,7 +112,7 @@ const getMyTickets = async (req, res) => {
     });
   } catch (error) {
     console.error('Error fetching user tickets:', error);
-    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+    res.status(500).json({
       success: false,
       message: 'Failed to fetch your tickets',
       error: error.message
@@ -132,7 +131,7 @@ const getTicketById = async (req, res) => {
       .populate('messages.sender', 'name email username');
 
     if (!ticket) {
-      return res.status(httpStatus.NOT_FOUND).json({
+      return res.status(404).json({
         success: false,
         message: 'Support ticket not found'
       });
@@ -140,19 +139,19 @@ const getTicketById = async (req, res) => {
 
     // Check if user can access this ticket
     if (req.user.role !== 'admin' && ticket.user._id.toString() !== req.user._id.toString()) {
-      return res.status(httpStatus.FORBIDDEN).json({
+      return res.status(403).json({
         success: false,
         message: 'Access denied'
       });
     }
 
-    res.status(httpStatus.OK).json({
+    res.status(200).json({
       success: true,
       data: ticket
     });
   } catch (error) {
     console.error('Error fetching ticket:', error);
-    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+    res.status(500).json({
       success: false,
       message: 'Failed to fetch ticket',
       error: error.message
@@ -184,20 +183,20 @@ const updateTicketStatus = async (req, res) => {
      .populate('assignedTo', 'name email');
 
     if (!ticket) {
-      return res.status(httpStatus.NOT_FOUND).json({
+      return res.status(404).json({
         success: false,
         message: 'Support ticket not found'
       });
     }
 
-    res.status(httpStatus.OK).json({
+    res.status(200).json({
       success: true,
       message: 'Ticket updated successfully',
       data: ticket
     });
   } catch (error) {
     console.error('Error updating ticket:', error);
-    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+    res.status(500).json({
       success: false,
       message: 'Failed to update ticket',
       error: error.message
@@ -214,7 +213,7 @@ const addMessage = async (req, res) => {
     const ticket = await SupportTicket.findById(id);
     
     if (!ticket) {
-      return res.status(httpStatus.NOT_FOUND).json({
+      return res.status(404).json({
         success: false,
         message: 'Support ticket not found'
       });
@@ -222,7 +221,7 @@ const addMessage = async (req, res) => {
 
     // Check if user can add message to this ticket
     if (req.user.role !== 'admin' && ticket.user.toString() !== req.user._id.toString()) {
-      return res.status(httpStatus.FORBIDDEN).json({
+      return res.status(403).json({
         success: false,
         message: 'Access denied'
       });
@@ -247,14 +246,14 @@ const addMessage = async (req, res) => {
     await ticket.save();
     await ticket.populate('messages.sender', 'name email username');
 
-    res.status(httpStatus.OK).json({
+    res.status(200).json({
       success: true,
       message: 'Message added successfully',
       data: ticket
     });
   } catch (error) {
     console.error('Error adding message:', error);
-    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+    res.status(500).json({
       success: false,
       message: 'Failed to add message',
       error: error.message
@@ -325,13 +324,13 @@ const getTicketStats = async (req, res) => {
       avgResponseTimeHours: avgResponseTime[0] ? Math.round(avgResponseTime[0].avgTime / (1000 * 60 * 60)) : 0
     };
 
-    res.status(httpStatus.OK).json({
+    res.status(200).json({
       success: true,
       data: stats
     });
   } catch (error) {
     console.error('Error fetching ticket stats:', error);
-    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+    res.status(500).json({
       success: false,
       message: 'Failed to fetch ticket statistics',
       error: error.message
@@ -347,19 +346,19 @@ const deleteTicket = async (req, res) => {
     const ticket = await SupportTicket.findByIdAndDelete(id);
     
     if (!ticket) {
-      return res.status(httpStatus.NOT_FOUND).json({
+      return res.status(404).json({
         success: false,
         message: 'Support ticket not found'
       });
     }
 
-    res.status(httpStatus.OK).json({
+    res.status(200).json({
       success: true,
       message: 'Support ticket deleted successfully'
     });
   } catch (error) {
     console.error('Error deleting ticket:', error);
-    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+    res.status(500).json({
       success: false,
       message: 'Failed to delete ticket',
       error: error.message

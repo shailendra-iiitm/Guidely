@@ -40,7 +40,7 @@ const Routes = [
     route: availabilityRoute,
   },
   {
-    path: "/mentor",
+    path: "/guide",
     route: guideRoute,
   },
   {

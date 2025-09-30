@@ -68,7 +68,7 @@ const AdminDashboardHome = () => {
       color: "bg-emerald-500",
       textColor: "text-emerald-600",
       bgColor: "bg-emerald-50",
-      subtitle: "Active mentors"
+      subtitle: "Active guides"
     },
     {
       title: "Pending Verifications",

@@ -12,7 +12,7 @@ const DashboardSelector = ({ children }) => {
   if (user.role === "admin") {
     return <AdminDashboard>{children}</AdminDashboard>;
   }
-  if (user.role === "mentor" || user.role === "guide") {
+  if (user.role === "guide") {
     return <GuideDashboard>{children}</GuideDashboard>;
   }
   if (user.role === "learner" || user.role === "student") {

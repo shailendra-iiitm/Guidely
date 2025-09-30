@@ -32,12 +32,15 @@ const TopGuides = () => {
     setLoading(true);
     try {
       const response = await guideAPI.getAllGuides();
+      console.log('API Response:', response);
       const allGuides = response?.data?.guides || [];
+      console.log('Guides received:', allGuides.length);
       setGuidesData(allGuides); // Store all guides
 
       setTopGuides(selectTopGuides(allGuides)); // Set 4 random guides directly from the API response
     } catch (error) {
       console.error("Error fetching guides:", error);
+      setTopGuides([]); // Set empty array on error to stop infinite loop
     } finally {
       setLoading(false);
     }

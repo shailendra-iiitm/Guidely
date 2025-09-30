@@ -4,9 +4,12 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import routes from "./routes";
 import ProtectedRoute from "./components/ProtectedRoute";
+import EnvironmentIndicator from "./components/EnvironmentIndicator";
+import SupportWidget from "./components/SupportWidget";
 
 const App = () => (
   <div className="mx-auto max-w-screen-3xl">
+    <EnvironmentIndicator />
     <Toaster position="top-center" />
     <BrowserRouter>
       <Routes>
@@ -24,6 +27,7 @@ const App = () => (
           />
         ))}
       </Routes>
+      <SupportWidget />
     </BrowserRouter>
   </div>
 );

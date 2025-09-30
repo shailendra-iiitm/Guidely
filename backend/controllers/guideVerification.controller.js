@@ -1,5 +1,4 @@
 const guideVerificationService = require("../services/guideVerification.service");
-const httpStatus = require("../util/httpStatus");
 
 const uploadDocuments = async (req, res) => {
   try {
@@ -10,7 +9,7 @@ const uploadDocuments = async (req, res) => {
     console.log("Files received:", Object.keys(files || {}));
 
     if (!files || Object.keys(files).length === 0) {
-      return res.status(httpStatus.badRequest).json({
+      return res.status(400).json({
         message: "No documents uploaded"
       });
     }
@@ -42,7 +41,7 @@ const uploadDocuments = async (req, res) => {
     // Submit verification with uploaded documents
     const user = await guideVerificationService.submitGuideVerification(userId, documents);
 
-    res.status(httpStatus.ok).json({
+    res.status(200).json({
       message: "Documents uploaded and verification submitted successfully",
       verificationStatus: user.guideVerification.status,
       documents: user.guideVerification.documents
@@ -61,7 +60,7 @@ const getVerificationStatus = async (req, res) => {
 
     const status = await guideVerificationService.getGuideVerificationStatus(userId);
 
-    res.status(httpStatus.ok).json({
+    res.status(200).json({
       message: "Verification status retrieved successfully",
       verificationStatus: status
     });
@@ -86,7 +85,7 @@ const reviewVerification = async (req, res) => {
       comments
     );
 
-    res.status(httpStatus.ok).json({
+    res.status(200).json({
       message: `Guide verification ${status} successfully`,
       guide: {
         id: guide._id,
@@ -108,7 +107,7 @@ const getPendingVerifications = async (req, res) => {
 
     const pendingGuides = await guideVerificationService.getPendingVerifications();
 
-    res.status(httpStatus.ok).json({
+    res.status(200).json({
       message: "Pending verifications retrieved successfully",
       count: pendingGuides.length,
       pendingGuides
@@ -135,7 +134,7 @@ const getVerifiedGuides = async (req, res) => {
 
     const guides = await guideVerificationService.getVerifiedGuides(filters);
 
-    res.status(httpStatus.ok).json({
+    res.status(200).json({
       message: "Verified guides retrieved successfully",
       count: guides.length,
       guides

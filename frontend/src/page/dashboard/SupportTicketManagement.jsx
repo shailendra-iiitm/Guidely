@@ -17,15 +17,23 @@ const SupportTicketManagement = () => {
     category: '',
     search: ''
   });
-  const [pagination, setPagination] = useState({});
+  const [pagination, setPagination] = useState({ 
+    page: 1, 
+    pages: 1, 
+    total: 0 
+  });
   const [stats, setStats] = useState(null);
 
   const fetchTickets = useCallback(async () => {
     try {
       setIsLoading(true);
       const response = await supportTickets.getAllTickets(filters);
-      setTickets(response.data.tickets);
-      setPagination(response.data.pagination);
+      setTickets(response.data.tickets || []);
+      setPagination({
+        page: response.data.page || 1,
+        pages: response.data.pages || 1,
+        total: response.data.total || 0
+      });
     } catch (error) {
       console.error("Error fetching tickets:", error);
       toast.error("Failed to load support tickets");
